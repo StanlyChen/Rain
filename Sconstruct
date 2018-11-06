@@ -1,0 +1,28 @@
+VariantDir("build",".", duplicate =0)
+files = Glob("build/*.cpp")+Glob("build/GeneratedFiles/*.cpp")+Glob("build/GeneratedFiles/Debug/*.cpp")
+env = Environment()
+
+env.Append(CPPPATH=[
+r"D:\Qt\5.11.2\msvc2017_64\include",
+r"D:\Qt\5.11.2\msvc2017_64\include\QtWidgets",
+r"D:\Qt\5.11.2\msvc2017_64\include\QtOpenGL",
+r"D:\Qt\5.11.2\msvc2017_64\include\QtGui",
+r"D:\Qt\5.11.2\msvc2017_64\include\QtCore",
+r"./GeneratedFiles",
+r".",
+])
+
+env.Append(LIBPATH=[
+r"D:\Qt\5.11.2\msvc2017_64\lib",
+])
+
+env.Append(LIBS=[ "qtmaind",
+"Qt5Cored",
+"Qt5Guid",
+"Qt5OpenGLd",
+"opengl32",
+"glu32",
+"Qt5OpenGLExtensionsd",
+"Qt5Widgetsd",
+])
+env.Program("build/rain.exe",files)

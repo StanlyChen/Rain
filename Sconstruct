@@ -1,19 +1,102 @@
+import os
+import subprocess
+from pathlib import Path
+
+#================================
+def moc_builder(target, source, env):
+	command_template= "{QTDIR}/bin/moc.exe {SOURCE} -o {TARGET}{INCLUDE}{MACROS}"
+	QTDIR =  env["QTDIR"]
+	QTGEN =  env['QTGEN']
+	params = { 'SOURCE' : str(source[0]), 'TARGET' : str(target[0]) }
+	params['QTDIR'] = QTDIR
+	includes = [""]
+	includes.append(QTGEN)
+	includes.append(".")
+	includes.append(os.path.join(QTDIR,"include"))
+	includes.append(os.path.join(QTDIR,"include","QtCore"))
+	includes.append(os.path.join(QTDIR,"include","QtGui"))
+	includes.append(os.path.join(QTDIR,"include","QtANGLE"))
+	includes.append(os.path.join(QTDIR,"include","QtOpenGL"))
+	includes.append(os.path.join(QTDIR,"include","QtWidgets"))
+	params['INCLUDE'] = " -I".join(includes)
+
+	macros=["UNICODE","_UNICODE","WIN32","WIN64","QT_DLL","QT_CORE_LIB","QT_GUI_LIB","QT_OPENGL_LIB","QT_WIDETS_LIB"]
+	params['MACROS'] = ' -D'.join(macros)
+	command = command_template.format(**params)
+	print(command)
+	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+	out,err = proc.communicate()
+	if err:
+		print(out)
+	return proc.returncode
+
+def ui_builder( target, source, env):
+	command_template= "{QTDIR}/bin/uic.exe {SOURCE} -o {TARGET}"
+	params = { 'SOURCE' : str(source[0]), 'TARGET' : str(target[0]) }
+	params['QTDIR'] = env["QTDIR"]
+	command = command_template.format(**params)
+	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+	out,err = proc.communicate()
+	if err:
+		print(out)
+	return proc.returncode
+
+def rcc_builder( target, source, env):
+	command_template= "{QTDIR}/bin/rcc.exe {SOURCE} -o {TARGET} --name {NAME}"
+	params = { 'SOURCE' : str(source[0]), 'TARGET' : str(target[0]) }
+	params['QTDIR'] = env["QTDIR"]
+	params['NAME'] = Path(source[0].name).stem
+	command = command_template.format(**params)
+	print(command)
+	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+	out,err = proc.communicate()
+	if err:
+		print(out)
+	return proc.returncode
+
+moc = Builder( action = moc_builder, prefix = "${QTGEN}/moc_", suffix =".cpp", src_suffix=".h")
+uic = Builder( action = ui_builder, prefix = "${QTGEN}/ui_", suffix =".h",src_suffix = ".ui")
+rcc = Builder( action = rcc_builder, prefix = "${QTGEN}/qrc_",suffix =".cpp", src_suffix = ".qrc")
+
+env = Environment( BUILDERS={"MyMoc": moc, "MyUic":uic, "MyRcc": rcc }, QTGEN="build/qtgen/", QTDIR="G:/Qt/5.11.2/msvc2017_64/" )
+
+generateNode = []
+
+mocfiles = ["MainWindow","RainRenderingWindow"]
+uicfiles = Glob("*.ui")
+rccfiles = Glob("*.qrc")
+
+for moc_file in mocfiles:
+	target_node = env.MyMoc(moc_file)
+	generateNode.append( target_node )
+
+for uic_file in uicfiles:
+	env.MyUic(uic_file)
+
+
+for rcc_file in rccfiles:
+	target_node = env.MyRcc(rcc_file)
+	generateNode.append( target_node )
+
+
+
+
 VariantDir("build",".", duplicate =0)
-files = Glob("build/*.cpp")+Glob("build/GeneratedFiles/*.cpp")+Glob("build/GeneratedFiles/Debug/*.cpp")
-env = Environment()
+files = Glob("build/*.cpp") + generateNode
+
 
 env.Append(CPPPATH=[
-r"D:\Qt\5.11.2\msvc2017_64\include",
-r"D:\Qt\5.11.2\msvc2017_64\include\QtWidgets",
-r"D:\Qt\5.11.2\msvc2017_64\include\QtOpenGL",
-r"D:\Qt\5.11.2\msvc2017_64\include\QtGui",
-r"D:\Qt\5.11.2\msvc2017_64\include\QtCore",
-r"./GeneratedFiles",
-r".",
+"${QTDIR}/include",
+"${QTDIR}/include/QtWidgets",
+"${QTDIR}/include/QtOpenGL",
+"${QTDIR}/include/QtGui",
+"${QTDIR}/include/QtCore",
+"${QTGEN}",
+".",
 ])
 
 env.Append(LIBPATH=[
-r"D:\Qt\5.11.2\msvc2017_64\lib",
+"${QTDIR}/lib",
 ])
 
 env.Append(LIBS=[ "qtmaind",
@@ -26,3 +109,4 @@ env.Append(LIBS=[ "qtmaind",
 "Qt5Widgetsd",
 ])
 env.Program("build/rain.exe",files)
+

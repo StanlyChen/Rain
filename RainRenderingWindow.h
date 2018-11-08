@@ -19,8 +19,6 @@ namespace Rain
 		RainRenderingWindow();
 		~RainRenderingWindow();
 
-		void bindView(RainView* pView);
-
 	public:
 		void initializeGL() override;
 		void resizeGL(int w, int h) override;
@@ -30,6 +28,10 @@ namespace Rain
 		void paintOverGL() override;
 
 		LayerManager* getLayerManager();
+
+	signals:
+		void afterRenderingWindowInit(RainRenderingWindow*);
+		void beforeRenderingWindowUpdate(RainRenderingWindow*);
 
 	protected:
 		QOpenGLPaintDevice* m_paintDevice;

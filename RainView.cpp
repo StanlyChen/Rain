@@ -19,7 +19,7 @@ namespace Rain{
 		return m_window;
 	}
 
-	void RainView::onRenderingWindowInit(RainRenderingWindow* pRenderingWindow)
+	void RainView::onAfterRenderingWindowInit(RainRenderingWindow* pRenderingWindow)
 	{
 		if (m_window)
 			throw std::exception("Program Error");
@@ -45,7 +45,7 @@ namespace Rain{
 		pLayerManger->setLayerName(m_overlapLayer, OVERLAP_LAYER_NAME);
 	}
 
-	void RainView::onRenderingWindowUpdate(RainRenderingWindow* pView)
+	void RainView::onBeforeRenderingWindowUpdate(RainRenderingWindow* pView)
 	{
 
 	}

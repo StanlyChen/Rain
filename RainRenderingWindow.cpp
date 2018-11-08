@@ -12,12 +12,7 @@ namespace Rain
 		m_view = nullptr;
 	}
 
-	void RainRenderingWindow::bindView(RainView* pView)
-	{
-		if (m_view)
-			throw std::exception("Program Error");
-		m_view = pView;
-	}
+	
 
 
 	RainRenderingWindow::~RainRenderingWindow()
@@ -35,6 +30,8 @@ namespace Rain
 
 		m_paintDevice = new QOpenGLPaintDevice;
 
+		emit afterRenderingWindowInit(this);
+
 	}
 
 	void  RainRenderingWindow::resizeGL(int w, int h)
@@ -44,6 +41,8 @@ namespace Rain
 
 	void  RainRenderingWindow::paintGL()
 	{
+		emit beforeRenderingWindowUpdate(this);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		glColor3b(255, 124, 85);

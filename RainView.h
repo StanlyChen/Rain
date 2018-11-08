@@ -1,4 +1,5 @@
 #pragma once
+#include <QObject>
 
 namespace Rain
 {
@@ -6,16 +7,21 @@ namespace Rain
 	class Layer;
 	class BackgroundImage;
 
-	class RainView
+	class RainView : public QObject
 	{
+		Q_OBJECT;
+
 	public:
 		RainView();
 		~RainView();
 
-		void onRenderingWindowInit(RainRenderingWindow* );
-		void onRenderingWindowUpdate(RainRenderingWindow*);
 
 		RainRenderingWindow* getWindow();
+
+	public slots:
+		void onAfterRenderingWindowInit(RainRenderingWindow*);
+		void onBeforeRenderingWindowUpdate(RainRenderingWindow*);
+
 
 	private:
 		RainRenderingWindow* m_window;

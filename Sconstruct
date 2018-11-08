@@ -1,3 +1,5 @@
+#refs: http://grbd.github.io/posts/2016/07/27/scons-builds-with-visual-studio/
+
 import os
 import subprocess
 from pathlib import Path
@@ -20,6 +22,13 @@ if not configs.get("QT_DIR"):
 
 
 #================================
+def checkError(proc):
+	out,err = proc.communicate()
+	if err:
+		print(out.decode())
+		print(err.decode())
+	return proc.returncode
+
 def moc_builder(target, source, env):
 	command_template= "{QT_DIR}/bin/moc.exe {SOURCE} -o {TARGET}{INCLUDE}{MACROS}"
 	QT_DIR =  env["QT_DIR"]
@@ -41,10 +50,7 @@ def moc_builder(target, source, env):
 	params['MACROS'] = ' -D'.join(macros)
 	command = command_template.format(**params)
 	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
-	out,err = proc.communicate()
-	if err:
-		print(out)
-	return proc.returncode
+	return checkError(proc)
 
 def ui_builder( target, source, env):
 	command_template= "{QT_DIR}/bin/uic.exe {SOURCE} -o {TARGET}"
@@ -52,10 +58,7 @@ def ui_builder( target, source, env):
 	params['QT_DIR'] = env["QT_DIR"]
 	command = command_template.format(**params)
 	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
-	out,err = proc.communicate()
-	if err:
-		print(out)
-	return proc.returncode
+	return checkError(proc)
 
 def rcc_builder( target, source, env):
 	command_template= "{QT_DIR}/bin/rcc.exe {SOURCE} -o {TARGET} --name {NAME}"
@@ -64,10 +67,7 @@ def rcc_builder( target, source, env):
 	params['NAME'] = Path(source[0].name).stem
 	command = command_template.format(**params)
 	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
-	out,err = proc.communicate()
-	if err:
-		print(out)
-	return proc.returncode
+	return checkError(proc)
 
 moc = Builder( action = moc_builder, prefix = "${QTGEN}/moc_", suffix =".cpp", src_suffix=".h")
 uic = Builder( action = ui_builder, prefix = "${QTGEN}/ui_", suffix =".h",src_suffix = ".ui")
@@ -75,11 +75,13 @@ rcc = Builder( action = rcc_builder, prefix = "${QTGEN}/qrc_",suffix =".cpp", sr
 
 env = Environment( BUILDERS={"MyMoc": moc, "MyUic":uic, "MyRcc": rcc }, 
 	QTGEN="build/qtgen/", 
+	TARGET_PLATFORM = "x64",
+	BUILD_TYPE = "Release",
 	**configs)
 
 generateNode = []
 
-mocfiles = ["MainWindow","RainRenderingWindow"]
+mocfiles = ["MainWindow","RainRenderingWindow","RainView"]
 uicfiles = Glob("*.ui")
 rccfiles = Glob("*.qrc")
 
@@ -126,9 +128,11 @@ env.Append(LIBS=[ "qtmaind",
 "Qt5Widgetsd",
 ])
 
-env.Append(CPPFLAGS="/EHsc")
+env.Append(CPPDEFINES=["_DEBUG",'DEBUG'])
+print(env.File("${TARGET}.pdb").name)
+env.Append(CPPFLAGS=" /EHsc /MDd /Od /Zi  /FS /Fdbuild/rain.pdb")
+env.Append(LINKFLAGS=" /PDB:./build/ran.pdb")
 
-env.Program("build/rain.exe",files)
 
 mysrcs = []
 for srcfile in files:
@@ -144,5 +148,11 @@ for incdir in localIncs:
 		mylocalincs.append( str(incfile) )
 
 
+rain_program = env.Program("build/rain.exe",files)
+env.Alias("build/rain.exe", "rain")
 
-env.MSVSProject("build/rain"+ env['MSVSPROJECTSUFFIX'], srcs = mysrcs, incs =mylocalincs, variant = "Release|x64")
+env.MSVSProject("build/rain"+ env['MSVSPROJECTSUFFIX'], srcs = mysrcs, incs =mylocalincs,
+ variant = "%(BUILD_TYPE)s|%(TARGET_PLATFORM)s" % env.Dictionary())
+env.Alias("build/rain"+ env['MSVSPROJECTSUFFIX'], "rain_proj")
+
+env.Install("${TARGET_PLATFORM}/${BUILD_TYPE}", rain_program)

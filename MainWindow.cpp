@@ -22,7 +22,9 @@ namespace Rain
 		centerWidet->setLayout(layout);
 
 		m_view = new RainView();
-		m_renderingWindow->bindView(m_view);
+
+		connect(m_renderingWindow, SIGNAL(afterRenderingWindowInit(RainRenderingWindow*)), m_view, SLOT(onAfterRenderingWindowInit(RainRenderingWindow*)));
+		connect(m_renderingWindow, SIGNAL(beforeRenderingWindowUpdate(RainRenderingWindow*)), m_view, SLOT(onBeforeRenderingWindowUpdate(RainRenderingWindow*)));
 
 	}
 }

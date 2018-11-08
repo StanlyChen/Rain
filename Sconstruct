@@ -23,7 +23,6 @@ def moc_builder(target, source, env):
 	macros=["UNICODE","_UNICODE","WIN32","WIN64","QT_DLL","QT_CORE_LIB","QT_GUI_LIB","QT_OPENGL_LIB","QT_WIDETS_LIB"]
 	params['MACROS'] = ' -D'.join(macros)
 	command = command_template.format(**params)
-	print(command)
 	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
 	out,err = proc.communicate()
 	if err:
@@ -47,7 +46,6 @@ def rcc_builder( target, source, env):
 	params['QTDIR'] = env["QTDIR"]
 	params['NAME'] = Path(source[0].name).stem
 	command = command_template.format(**params)
-	print(command)
 	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
 	out,err = proc.communicate()
 	if err:
@@ -58,7 +56,8 @@ moc = Builder( action = moc_builder, prefix = "${QTGEN}/moc_", suffix =".cpp", s
 uic = Builder( action = ui_builder, prefix = "${QTGEN}/ui_", suffix =".h",src_suffix = ".ui")
 rcc = Builder( action = rcc_builder, prefix = "${QTGEN}/qrc_",suffix =".cpp", src_suffix = ".qrc")
 
-env = Environment( BUILDERS={"MyMoc": moc, "MyUic":uic, "MyRcc": rcc }, QTGEN="build/qtgen/", QTDIR="G:/Qt/5.11.2/msvc2017_64/" )
+env = Environment( BUILDERS={"MyMoc": moc, "MyUic":uic, "MyRcc": rcc }, QTGEN="build/qtgen/", QTDIR="D:/Qt/5.11.2/msvc2017_64/",
+MSSDK_VERSION = "10.0.17763.0" )
 
 generateNode = []
 
@@ -68,7 +67,7 @@ rccfiles = Glob("*.qrc")
 
 for moc_file in mocfiles:
 	target_node = env.MyMoc(moc_file)
-	generateNode.append( target_node )
+	generateNode.append( target_node[0] )
 
 for uic_file in uicfiles:
 	env.MyUic(uic_file)
@@ -76,7 +75,7 @@ for uic_file in uicfiles:
 
 for rcc_file in rccfiles:
 	target_node = env.MyRcc(rcc_file)
-	generateNode.append( target_node )
+	generateNode.append( target_node[0] )
 
 
 
@@ -84,16 +83,16 @@ for rcc_file in rccfiles:
 VariantDir("build",".", duplicate =0)
 files = Glob("build/*.cpp") + generateNode
 
-
-env.Append(CPPPATH=[
+localIncs = ["${QTGEN}", "."]
+qtIncs = [
 "${QTDIR}/include",
 "${QTDIR}/include/QtWidgets",
 "${QTDIR}/include/QtOpenGL",
 "${QTDIR}/include/QtGui",
 "${QTDIR}/include/QtCore",
-"${QTGEN}",
-".",
-])
+]
+
+env.Append(CPPPATH= qtIncs + localIncs )
 
 env.Append(LIBPATH=[
 "${QTDIR}/lib",
@@ -110,3 +109,20 @@ env.Append(LIBS=[ "qtmaind",
 ])
 env.Program("build/rain.exe",files)
 
+mysrcs = []
+for srcfile in files:
+	mysrcs.append( str(srcfile) )
+myincs = []
+for incdir in qtIncs:
+	for incfile in env.Glob(incdir+"/*"):
+		myincs.append( str(incfile) )
+
+mylocalincs = []
+for incdir in localIncs:
+	for incfile in env.Glob(incdir+"/*.h"):
+		mylocalincs.append( str(incfile) )
+
+
+
+env.MSVSProject("build/rain"+ env['MSVSPROJECTSUFFIX'], srcs = mysrcs, incs =mylocalincs, variant = "Release|x64")
+#<WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>

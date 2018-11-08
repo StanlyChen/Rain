@@ -2,13 +2,14 @@
 #include <QOpenGLWindow>
 #include <QTime>
 #include "RainOpenGL.h"
-#include "RainView.h"
+
 
 
 namespace Rain
 {
 	class Layer;
 	class LayerManager;
+	class RainView;
 	
 	class RainRenderingWindow : public QOpenGLWindow, public RainOpenGLFuncs
 	{
@@ -17,6 +18,8 @@ namespace Rain
 	public:
 		RainRenderingWindow();
 		~RainRenderingWindow();
+
+		void bindView(RainView* pView);
 
 	public:
 		void initializeGL() override;
@@ -27,10 +30,12 @@ namespace Rain
 		void paintOverGL() override;
 
 		LayerManager* getLayerManager();
+
 	protected:
 		QOpenGLPaintDevice* m_paintDevice;
 		QTime               m_fpsTimer;
 		LayerManager*       m_layerManager;
+		RainView*           m_view;
 
 	};
 }

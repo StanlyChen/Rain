@@ -22,7 +22,7 @@ namespace Rain
 		centerWidet->setLayout(layout);
 
 		m_view = new RainView();
-
+		m_renderingWindow->bindView(m_view);
 
 	}
 }

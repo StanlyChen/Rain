@@ -9,6 +9,14 @@ namespace Rain
 		:  QOpenGLWindow()
 	{
 		m_layerManager = new LayerManager();
+		m_view = nullptr;
+	}
+
+	void RainRenderingWindow::bindView(RainView* pView)
+	{
+		if (m_view)
+			throw std::exception("Program Error");
+		m_view = pView;
 	}
 
 

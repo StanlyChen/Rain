@@ -1,23 +1,40 @@
 import os
 import subprocess
 from pathlib import Path
+import platform
+import json
+
+templateConfifFile = "machines/{0}.json".format("template_config")
+localConfigFile = "machines/{0}.json".format(platform.node())
+if not os.path.exists(localConfigFile):
+	Execute(  Copy(localConfigFile, templateConfifFile) )
+
+configs = dict()
+with open(localConfigFile,"r") as inputfile:
+ configs = json.load( inputfile )
+
+if not configs.get("QT_DIR"):
+	print("Edit the configfile: "+ localConfigFile)
+	Exit(-1)
+
+
 
 #================================
 def moc_builder(target, source, env):
-	command_template= "{QTDIR}/bin/moc.exe {SOURCE} -o {TARGET}{INCLUDE}{MACROS}"
-	QTDIR =  env["QTDIR"]
+	command_template= "{QT_DIR}/bin/moc.exe {SOURCE} -o {TARGET}{INCLUDE}{MACROS}"
+	QT_DIR =  env["QT_DIR"]
 	QTGEN =  env['QTGEN']
 	params = { 'SOURCE' : str(source[0]), 'TARGET' : str(target[0]) }
-	params['QTDIR'] = QTDIR
+	params['QT_DIR'] = QT_DIR
 	includes = [""]
 	includes.append(QTGEN)
 	includes.append(".")
-	includes.append(os.path.join(QTDIR,"include"))
-	includes.append(os.path.join(QTDIR,"include","QtCore"))
-	includes.append(os.path.join(QTDIR,"include","QtGui"))
-	includes.append(os.path.join(QTDIR,"include","QtANGLE"))
-	includes.append(os.path.join(QTDIR,"include","QtOpenGL"))
-	includes.append(os.path.join(QTDIR,"include","QtWidgets"))
+	includes.append(os.path.join(QT_DIR,"include"))
+	includes.append(os.path.join(QT_DIR,"include","QtCore"))
+	includes.append(os.path.join(QT_DIR,"include","QtGui"))
+	includes.append(os.path.join(QT_DIR,"include","QtANGLE"))
+	includes.append(os.path.join(QT_DIR,"include","QtOpenGL"))
+	includes.append(os.path.join(QT_DIR,"include","QtWidgets"))
 	params['INCLUDE'] = " -I".join(includes)
 
 	macros=["UNICODE","_UNICODE","WIN32","WIN64","QT_DLL","QT_CORE_LIB","QT_GUI_LIB","QT_OPENGL_LIB","QT_WIDETS_LIB"]
@@ -30,9 +47,9 @@ def moc_builder(target, source, env):
 	return proc.returncode
 
 def ui_builder( target, source, env):
-	command_template= "{QTDIR}/bin/uic.exe {SOURCE} -o {TARGET}"
+	command_template= "{QT_DIR}/bin/uic.exe {SOURCE} -o {TARGET}"
 	params = { 'SOURCE' : str(source[0]), 'TARGET' : str(target[0]) }
-	params['QTDIR'] = env["QTDIR"]
+	params['QT_DIR'] = env["QT_DIR"]
 	command = command_template.format(**params)
 	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
 	out,err = proc.communicate()
@@ -41,9 +58,9 @@ def ui_builder( target, source, env):
 	return proc.returncode
 
 def rcc_builder( target, source, env):
-	command_template= "{QTDIR}/bin/rcc.exe {SOURCE} -o {TARGET} --name {NAME}"
+	command_template= "{QT_DIR}/bin/rcc.exe {SOURCE} -o {TARGET} --name {NAME}"
 	params = { 'SOURCE' : str(source[0]), 'TARGET' : str(target[0]) }
-	params['QTDIR'] = env["QTDIR"]
+	params['QT_DIR'] = env["QT_DIR"]
 	params['NAME'] = Path(source[0].name).stem
 	command = command_template.format(**params)
 	proc =  subprocess.Popen(command , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
@@ -56,8 +73,9 @@ moc = Builder( action = moc_builder, prefix = "${QTGEN}/moc_", suffix =".cpp", s
 uic = Builder( action = ui_builder, prefix = "${QTGEN}/ui_", suffix =".h",src_suffix = ".ui")
 rcc = Builder( action = rcc_builder, prefix = "${QTGEN}/qrc_",suffix =".cpp", src_suffix = ".qrc")
 
-env = Environment( BUILDERS={"MyMoc": moc, "MyUic":uic, "MyRcc": rcc }, QTGEN="build/qtgen/", QTDIR="D:/Qt/5.11.2/msvc2017_64/",
-MSSDK_VERSION = "10.0.17763.0" )
+env = Environment( BUILDERS={"MyMoc": moc, "MyUic":uic, "MyRcc": rcc }, 
+	QTGEN="build/qtgen/", 
+	**configs)
 
 generateNode = []
 
@@ -85,17 +103,17 @@ files = Glob("build/*.cpp") + generateNode
 
 localIncs = ["${QTGEN}", "."]
 qtIncs = [
-"${QTDIR}/include",
-"${QTDIR}/include/QtWidgets",
-"${QTDIR}/include/QtOpenGL",
-"${QTDIR}/include/QtGui",
-"${QTDIR}/include/QtCore",
+"${QT_DIR}/include",
+"${QT_DIR}/include/QtWidgets",
+"${QT_DIR}/include/QtOpenGL",
+"${QT_DIR}/include/QtGui",
+"${QT_DIR}/include/QtCore",
 ]
 
 env.Append(CPPPATH= qtIncs + localIncs )
 
 env.Append(LIBPATH=[
-"${QTDIR}/lib",
+"${QT_DIR}/lib",
 ])
 
 env.Append(LIBS=[ "qtmaind",
@@ -107,6 +125,9 @@ env.Append(LIBS=[ "qtmaind",
 "Qt5OpenGLExtensionsd",
 "Qt5Widgetsd",
 ])
+
+env.Append(CPPFLAGS="/EHsc")
+
 env.Program("build/rain.exe",files)
 
 mysrcs = []
@@ -125,4 +146,3 @@ for incdir in localIncs:
 
 
 env.MSVSProject("build/rain"+ env['MSVSPROJECTSUFFIX'], srcs = mysrcs, incs =mylocalincs, variant = "Release|x64")
-#<WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>

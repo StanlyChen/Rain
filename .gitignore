@@ -1,2 +1,6 @@
 build/*
 .sconsign.dblite
+.vs/*
+*.sln
+*.vcxproj
+*.vcxproj.filters

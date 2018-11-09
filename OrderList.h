@@ -9,7 +9,7 @@ namespace util
 	class OrderList
 	{
 
-	private:
+	public:
 		using ORDER_TYPE = std::list<T>;
 		using UNIQUE_TYPE = std::map<T, typename ORDER_TYPE::iterator>;
 		ORDER_TYPE m_list;

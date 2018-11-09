@@ -26,7 +26,7 @@ namespace Rain
 	{
 		initializeOpenGLFunctions();
 
-		glClearColor(1, 1, 1, 1);
+		glClearColor(0, 0, 0, 1);
 
 		m_paintDevice = new QOpenGLPaintDevice;
 
@@ -45,12 +45,11 @@ namespace Rain
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		glColor3b(255, 124, 85);
-		glBegin(GL_TRIANGLES);
-		glVertex3f(-0.5f, -0.5f, 1);
-		glVertex3f(0.f, 0.5f, 1);
-		glVertex3f(0.5f, -0.5f, 1);
-		glEnd();
+		auto layers = m_layerManager->getOrderedLayer();
+		for (auto layer : layers)
+		{
+			layer->render( this );
+		}
 
 	}
 

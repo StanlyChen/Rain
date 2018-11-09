@@ -42,10 +42,12 @@ namespace Rain
 
 		void setLayerName(Layer* pLayer, std::string name);
 		Layer* getLayerByName(std::string name);
+		util::OrderList<Layer*>::ORDER_TYPE getOrderedLayer();
 
 	private:
 		util::OrderList<Layer*> m_layers;
-
+		
+		;
 	};
 
 

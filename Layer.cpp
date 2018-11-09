@@ -67,4 +67,12 @@ namespace Rain
 		}
 		return nullptr;
 	}
+
+
+	util::OrderList<Layer*>::ORDER_TYPE LayerManager::getOrderedLayer()
+	{
+		util::OrderList<Layer*>::ORDER_TYPE retList;
+		retList.assign(m_layers.begin(), m_layers.end());
+		return retList;
+	}
 }

@@ -24,12 +24,11 @@ namespace Rain
 
 
 	private:
-		RainRenderingWindow* m_window;
-		Layer*               m_backgroundLayer;
-		Layer*               m_mainLayer;
-		Layer*               m_overlapLayer;
-
-		BackgroundImage*     m_background;
+		RainRenderingWindow* m_window = nullptr;
+		Layer*               m_backgroundLayer = nullptr;
+		Layer*               m_mainLayer = nullptr;
+		Layer*               m_overlapLayer = nullptr;
+		BackgroundImage*     m_background = nullptr;
 	};
 }
 

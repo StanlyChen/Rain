@@ -129,9 +129,8 @@ env.Append(LIBS=[ "qtmaind",
 ])
 
 env.Append(CPPDEFINES=["_DEBUG",'DEBUG'])
-print(env.File("${TARGET}.pdb").name)
 env.Append(CPPFLAGS=" /EHsc /MDd /Od /Zi  /FS /Fdbuild/rain.pdb")
-env.Append(LINKFLAGS=" /PDB:./build/ran.pdb")
+env.Append(LINKFLAGS=" /PDB:./build/ran.pdb /DEBUG")
 
 
 mysrcs = []

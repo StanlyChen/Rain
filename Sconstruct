@@ -153,7 +153,7 @@ for incdir in localIncs:
 rain_program = env.Program("build/rain.exe",files)
 env.Alias("rain", rain_program)
 
-env.MSVSProject("build/rain"+ env['MSVSPROJECTSUFFIX'], srcs = mysrcs, incs =mylocalincs,
+env.MSVSProject("build/rain"+ env['MSVSPROJECTSUFFIX'], srcs = mysrcs, incs =mylocalincs, misc = Glob("*.ui",strings=True)+Glob("*.qrc",strings=True),
  variant = "%(BUILD_TYPE)s|%(TARGET_PLATFORM)s" % env.Dictionary())
 env.Alias("build/rain"+ env['MSVSPROJECTSUFFIX'], "rain_proj")
 

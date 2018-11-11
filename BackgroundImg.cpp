@@ -1,6 +1,7 @@
 #include "BackgroundImg.h"
 #include <iostream>
 #include <SOIL.h>
+#include <QFile>
 
 namespace Rain
 {
@@ -21,29 +22,13 @@ namespace Rain
 		pContext->glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 		pContext->glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertices), quad_vertices, GL_STATIC_DRAW);
 
-       /* pContext->glGenTextures(1, &m_texture);
-        pContext->glBindTexture(GL_TEXTURE_2D, m_texture);
-
-        int width, height;
-        int chanles;
-        unsigned char* imgData = SOIL_load_image(R"(G:\Projs\gui\Rain\res\out.bmp)", &width, &height, &chanles, SOIL_LOAD_AUTO);
-        pContext->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData);
-
-        SOIL_save_image(R"(G:\Projs\gui\Rain\res\out.bmp)", SOIL_SAVE_TYPE_BMP,
-            width, height, chanles,
-            imgData);*/
-
-        m_texture = SOIL_load_OGL_texture(R"(G:\Projs\gui\Rain\res\background.png)", 0, 0, SOIL_FLAG_MIPMAPS);
-
-        //SOIL_free_image_data(imgData);
-
-        //float pixels[] = {
-        //    1.0f, 1.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-        //    0.0f, 1.0f, 0.0f,   0.0f, 0.0f, 1.0f
-        //};
-        //pContext->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
-
-        //pContext->glGenerateMipmap(GL_TEXTURE_2D);
+		QFile bgImg(":/res/background.png");
+		bgImg.open(QFile::ReadOnly);
+		QByteArray dataArray = bgImg.readAll();
+		int arraySize = dataArray.size();
+		bgImg.close();
+		m_texture = SOIL_load_OGL_texture_from_memory((unsigned char*)dataArray.constData(), dataArray.size(), 0, 0, SOIL_FLAG_MIPMAPS);
+        //m_texture = SOIL_load_OGL_texture(R"(G:\Projs\gui\Rain\res\background.png)", 0, 0, SOIL_FLAG_MIPMAPS);
 
 
         pContext->glGenSamplers(1, &linearSampler);

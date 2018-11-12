@@ -22,7 +22,7 @@ namespace Rain
 		virtual void create(RainOpenGLFuncs* pContext) {};
 
 		
-		static  ShaderCompileResult buildShaderProgram(RainOpenGLFuncs* pContext, const char* vertexStr = nullptr, const char* fragStr = nullptr, const char* gemoStr = nullptr);
+        static  ShaderCompileResult buildShaderProgram(RainOpenGLFuncs* pContext, const char* vertexStr = nullptr, const char* fragStr = nullptr, const char* gemoStr = nullptr, std::function<void(RainOpenGLFuncs*, ShaderCompileResult&)> preLinkCallback = {} );
 		static  ShaderCompileResult clearFailedBuild(RainOpenGLFuncs* pContext,  ShaderCompileResult& result);
 		static bool compileShader(RainOpenGLFuncs* pContext, GLuint shader, const char* source, std::string& errorMsg);
 	};

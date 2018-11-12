@@ -111,12 +111,14 @@ qtIncs = [
 "${QT_DIR}/include/QtGui",
 "${QT_DIR}/include/QtCore",
 ]
+thridInclude =["3rd/SOIL/include"]
 
-env.Append(CPPPATH= qtIncs + localIncs )
+qtLibs =[ "${QT_DIR}/lib"]
+thirdLibs = ["3rd/SOIL/lib"]
 
-env.Append(LIBPATH=[
-"${QT_DIR}/lib",
-])
+env.Append(CPPPATH= qtIncs + localIncs + thridInclude)
+
+env.Append(LIBPATH=qtLibs + thirdLibs)
 
 env.Append(LIBS=[ "qtmaind",
 "Qt5Cored",
@@ -126,11 +128,12 @@ env.Append(LIBS=[ "qtmaind",
 "glu32",
 "Qt5OpenGLExtensionsd",
 "Qt5Widgetsd",
+"SOIL"
 ])
 
 env.Append(CPPDEFINES=["_DEBUG",'DEBUG'])
 env.Append(CPPFLAGS=" /EHsc /MDd /Od /Zi  /FS /Fdbuild/rain.pdb")
-env.Append(LINKFLAGS=" /PDB:./build/ran.pdb /DEBUG")
+env.Append(LINKFLAGS=" /PDB:./build/rain.pdb /DEBUG")
 
 
 mysrcs = []
@@ -148,7 +151,7 @@ for incdir in localIncs:
 
 
 rain_program = env.Program("build/rain.exe",files)
-env.Alias("build/rain.exe", "rain")
+env.Alias("rain", rain_program)
 
 env.MSVSProject("build/rain"+ env['MSVSPROJECTSUFFIX'], srcs = mysrcs, incs =mylocalincs,
  variant = "%(BUILD_TYPE)s|%(TARGET_PLATFORM)s" % env.Dictionary())

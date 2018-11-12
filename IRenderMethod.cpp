@@ -21,7 +21,9 @@ namespace Rain
 		}
 	}
 
-	ShaderCompileResult IRenderMethod::buildShaderProgram(RainOpenGLFuncs* pContext, const char* vertexStr /*= nullptr*/, const char* fragStr/* = nullptr*/, const char* gemoStr /*= nullptr*/)
+	ShaderCompileResult IRenderMethod::buildShaderProgram(RainOpenGLFuncs* pContext, 
+        const char* vertexStr /*= nullptr*/, const char* fragStr/* = nullptr*/, const char* gemoStr /*= nullptr*/,
+        std::function<void(RainOpenGLFuncs*, ShaderCompileResult&)> preLinkCallback /*= {}*/)
 	{
 		ShaderCompileResult ret;
 		if (!vertexStr && !fragStr && !gemoStr)
@@ -63,6 +65,8 @@ namespace Rain
 		if(ret.fragShader)
 			pContext->glAttachShader(ret.program, ret.fragShader);
 
+        if (preLinkCallback)
+            preLinkCallback(pContext, ret);
 
 		pContext->glLinkProgram(ret.program);
 		GLint status;

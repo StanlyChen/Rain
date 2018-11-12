@@ -16,6 +16,8 @@ namespace Rain
 
 	private:
 		GLuint m_vbo = 0;
+        GLuint m_texture = 0;
+        GLuint linearSampler = 0;
 		BackgroundRenderMethod* m_renderMothod = nullptr;
 	};
 
@@ -26,9 +28,11 @@ namespace Rain
 		void bind(RainOpenGLFuncs* pContext);
 		void unbind(RainOpenGLFuncs* pContext);
 
+        GLint getImgLoc() { return m_img_loc; }
 	private:
 		GLuint m_vertexShader = 0;
 		GLuint m_fragShader = 0;
 		GLuint m_shaderProgram = 0;
+        GLint m_img_loc = -1;
 	};
 }

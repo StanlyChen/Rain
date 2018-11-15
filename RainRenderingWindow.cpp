@@ -51,14 +51,6 @@ namespace Rain
 			layer->render( this );
 			glClear(GL_DEPTH_BUFFER_BIT);
 		}
-
-		glColor3f(1, 0, 0);
-		glBegin(GL_TRIANGLES);
-		glVertex2f(-0.5, -0.5);
-		glVertex2f(0, 0.5);
-		glVertex2f(0.5, -0.5);
-		glEnd();
-
 	}
 
 	void RainRenderingWindow::paintUnderGL()

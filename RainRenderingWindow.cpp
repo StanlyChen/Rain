@@ -65,9 +65,16 @@ namespace Rain
 		//output FPS
 		int frameTime = m_fpsTimer.restart();;
 		QPainter painter(m_paintDevice);
-		QString strFrameTime("FrameTime: %1 ms (%2)");
-		painter.drawText(QPoint(20, 20), strFrameTime.arg(frameTime).arg(frameTime ? 1000/frameTime : 1000) );
+        QFont font = painter.font();
+        int fontHeight = 15;
+        font.setBold(true);
+        font.setPixelSize(fontHeight);
+        painter.setFont(font);
 
+        painter.setPen(Qt::yellow);
+		QString strFrameTime("FrameTime: %1 ms (%2)");
+
+		painter.drawText(QPoint(5, fontHeight), strFrameTime.arg(frameTime).arg(frameTime ? 1000/frameTime : 1000) );
 	}
 
 	LayerManager* RainRenderingWindow::getLayerManager()

@@ -15,6 +15,7 @@ namespace Rain
 		void destory(RainOpenGLFuncs* pContext) override;
 
 	private:
+        GLuint m_vao = 0;
 		GLuint m_vbo = 0;
         GLuint m_texture = 0;
         GLuint linearSampler = 0;

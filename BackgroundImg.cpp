@@ -15,21 +15,38 @@ namespace Rain
 			-1.f,  1.f, 1.0f,
 			1.f,  1.f, 1.0f,
 			1.f,-1.f,1.0f,
-            -1.f, -1.f, 1.0f
+            -1.f,  1.f, 1.0f,
+            1.f,-1.f,1.0f,
+            -1.0f, -1.0f, 1.0f
 			};
 
-		pContext->glGenBuffers(1, &m_vbo);
+        pContext->glGenVertexArrays(1, &m_vao);
+        pContext->glGenBuffers(1, &m_vbo);
+
+        pContext->glBindVertexArray(m_vao);
 		pContext->glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 		pContext->glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertices), quad_vertices, GL_STATIC_DRAW);
+        pContext->glEnableVertexAttribArray(0);
+        pContext->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+        pContext->glBindVertexArray(0);
 
-		QFile bgImg(":/res/background.png");
-		bgImg.open(QFile::ReadOnly);
-		QByteArray dataArray = bgImg.readAll();
-		int arraySize = dataArray.size();
-		bgImg.close();
-		m_texture = SOIL_load_OGL_texture_from_memory((unsigned char*)dataArray.constData(), dataArray.size(), 0, 0, SOIL_FLAG_MIPMAPS);
+      
+
+		//QFile bgImg(":/res/background.png");
+		//bgImg.open(QFile::ReadOnly);
+		//QByteArray dataArray = bgImg.readAll();
+		//int arraySize = dataArray.size();
+		//bgImg.close();
+		//m_texture = SOIL_load_OGL_texture_from_memory((unsigned char*)dataArray.constData(), dataArray.size(), 0, 0, SOIL_FLAG_MIPMAPS);
         //m_texture = SOIL_load_OGL_texture(R"(G:\Projs\gui\Rain\res\background.png)", 0, 0, SOIL_FLAG_MIPMAPS);
 
+        float bgColors[] = {
+            1,0,0, 0, 1,0 ,
+            0,0,1, 1 ,1,1
+        };
+        pContext->glGenTextures(1, &m_texture);
+        pContext->glBindTexture(GL_TEXTURE_2D, m_texture);
+        pContext->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, bgColors);
 
         pContext->glGenSamplers(1, &linearSampler);
         pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -50,23 +67,14 @@ namespace Rain
 	void BackgroundImage::render(RainOpenGLFuncs* pContext)
 	{
 		m_renderMothod->bind(pContext);
-		pContext->glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-
-		pContext->glEnableVertexAttribArray(0);
-		pContext->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-
-        pContext->glActiveTexture(GL_TEXTURE0);
-        pContext->glBindTexture(GL_TEXTURE_2D, m_texture);
+        pContext->glBindVertexArray(m_vao);
         pContext->glBindSampler(0, linearSampler);
-
-
+        pContext->glBindTexture(GL_TEXTURE_2D, m_texture);
         pContext->glUniform1i(m_renderMothod->getImgLoc(), 0);
 
         //pContext->glDisable(GL_CULL_FACE);
-		pContext->glDrawArrays(GL_QUADS, 0, 4);
+		pContext->glDrawArrays(GL_TRIANGLES, 0, 6);
 		
-
-		pContext->glDisableVertexAttribArray(0);
 		m_renderMothod->unbind(pContext);
 	}
 
@@ -80,30 +88,28 @@ namespace Rain
 	void BackgroundRenderMethod::create(RainOpenGLFuncs* pContext)
 	{
 		const char* vertexShaderStr = R"(
-			#version 150 core
+			#version 450 core
 
-			in vec3 position;
-            out vec2 texcoord;
-
+			layout(location =0) in vec3 position;
+            layout(location =0) out vec2 texcoord;
 			void main()
 			{
 				gl_Position = vec4(position, 1.0);
-                texcoord =  (position.xy  + vec2(1,1) )/2 ;
+                texcoord = (position.xy + vec2(1,1))/2;
 			}
 		)";
 
 		const char* fragShaderStr = R"(
-			#version 150 core
+			#version 450 core
 
             uniform sampler2D  bgImg;
-            in vec2 texcoord;
-			out vec4 outColor;
-            
 
+            layout( location = 0) in vec2 texcoord;
+			layout( location  = 0) out vec4 outColor;
+            
 			void main()
 			{
-				outColor = vec4(texture( bgImg, texcoord).xyz,1);
-                //outColor = vec4( texcoord,0,1);
+                outColor = vec4( texture(bgImg, texcoord).xyz, 1 );
 			}
 		)";
 

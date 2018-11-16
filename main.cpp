@@ -5,6 +5,7 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
     
+
     QSurfaceFormat format;
     format.setMajorVersion(4);
     format.setMinorVersion(5);
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
     QSurfaceFormat::setDefaultFormat(format);
 
 	Rain::MainWindow w;
+	w.setWindowTitle("Rain");
 	w.show();
 
 	return a.exec();

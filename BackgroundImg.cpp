@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SOIL.h>
 #include <QFile>
+#include <QImage>
 
 namespace Rain
 {
@@ -40,26 +41,29 @@ namespace Rain
 		//m_texture = SOIL_load_OGL_texture_from_memory((unsigned char*)dataArray.constData(), dataArray.size(), 0, 0, SOIL_FLAG_MIPMAPS);
         //m_texture = SOIL_load_OGL_texture(R"(G:\Projs\gui\Rain\res\background.png)", 0, 0, SOIL_FLAG_MIPMAPS);
 
-        float bgColors[] = {
-            1,0,0, 0, 1,0 ,
-            0,0,1, 1 ,1,1
-        };
+		QImage bgImg(":/res/background.png");
+		QImage::Format format = bgImg.format();
+		int width = bgImg.width();
+		int height = bgImg.height();
+		QImage convertedImg = bgImg.convertToFormat(QImage::Format::Format_RGBA8888);
+
         pContext->glGenTextures(1, &m_texture);
         pContext->glBindTexture(GL_TEXTURE_2D, m_texture);
-        pContext->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, bgColors);
+        pContext->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, convertedImg.width(), convertedImg.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, convertedImg.bits());
+		pContext->glGenerateMipmap(GL_TEXTURE_2D);
 
         pContext->glGenSamplers(1, &linearSampler);
         pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_WRAP_S, GL_REPEAT);
         pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_WRAP_T, GL_REPEAT);
         pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
-        pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
         pContext->glSamplerParameteri(linearSampler, GL_TEXTURE_COMPARE_FUNC, GL_NEVER);
 
         pContext->glSamplerParameterf(linearSampler, GL_TEXTURE_MIN_LOD, 0);
-        pContext->glSamplerParameterf(linearSampler, GL_TEXTURE_MAX_LOD, 0);
+        pContext->glSamplerParameterf(linearSampler, GL_TEXTURE_MAX_LOD, GL_TEXTURE_MAX_LOD);
         
 
 	}
@@ -72,7 +76,6 @@ namespace Rain
         pContext->glBindTexture(GL_TEXTURE_2D, m_texture);
         pContext->glUniform1i(m_renderMothod->getImgLoc(), 0);
 
-        //pContext->glDisable(GL_CULL_FACE);
 		pContext->glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		m_renderMothod->unbind(pContext);

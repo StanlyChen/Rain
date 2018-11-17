@@ -10,6 +10,8 @@ namespace Rain
 	{
 		m_layerManager = new LayerManager();
 		m_view = nullptr;
+
+        connect(this, SIGNAL(frameSwapped()), this, SLOT(onFrameSwapped()) );
 	}
 
 	
@@ -46,9 +48,9 @@ namespace Rain
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		auto layers = m_layerManager->getOrderedLayer();
-		for (auto layer : layers)
+		for (auto it = layers.rbegin(); it != layers.rend(); ++it )
 		{
-			layer->render( this );
+			(*it)->render( this );
 			glClear(GL_DEPTH_BUFFER_BIT);
 		}
 	}
@@ -63,7 +65,6 @@ namespace Rain
 		glFlush();
 		
 		//output FPS
-		int frameTime = m_fpsTimer.restart();;
 		QPainter painter(m_paintDevice);
         QFont font = painter.font();
         int fontHeight = 15;
@@ -74,11 +75,16 @@ namespace Rain
         painter.setPen(Qt::yellow);
 		QString strFrameTime("FrameTime: %1 ms (%2)");
 
-		painter.drawText(QPoint(5, fontHeight), strFrameTime.arg(frameTime).arg(frameTime ? 1000/frameTime : 1000) );
+		painter.drawText(QPoint(5, fontHeight), strFrameTime.arg(m_lastFrameTime).arg(m_lastFrameTime ? 1000/m_lastFrameTime : 1000) );
 	}
 
 	LayerManager* RainRenderingWindow::getLayerManager()
 	{
 		return m_layerManager;
 	}
+
+    void RainRenderingWindow::onFrameSwapped()
+    {
+        m_lastFrameTime = m_fpsTimer.restart();
+    }
 }

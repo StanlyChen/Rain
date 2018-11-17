@@ -33,11 +33,15 @@ namespace Rain
 		void afterRenderingWindowInit(RainRenderingWindow*);
 		void beforeRenderingWindowUpdate(RainRenderingWindow*);
 
+    protected slots:
+        void onFrameSwapped();
+
 	protected:
 		QOpenGLPaintDevice* m_paintDevice;
 		QTime               m_fpsTimer;
 		LayerManager*       m_layerManager;
 		RainView*           m_view;
+        int                 m_lastFrameTime = 0;
 
 	};
 }

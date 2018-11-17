@@ -25,7 +25,5 @@ namespace Rain
 	public:
 		virtual ~IRenderable() {};
 		virtual void render(RainOpenGLFuncs* pContext) = 0 {};
-		virtual void create(RainOpenGLFuncs* pContext) = 0 {};
-		virtual void destory(RainOpenGLFuncs* pContext) = 0 {};
 	};
 }

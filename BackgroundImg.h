@@ -11,8 +11,8 @@ namespace Rain
 	{
 	public:
 		void render(RainOpenGLFuncs* pContext) override;
-		void create(RainOpenGLFuncs* pContext)  override;
-		void destory(RainOpenGLFuncs* pContext) override;
+		void create(RainOpenGLFuncs* pContext)  ;
+		void destory(RainOpenGLFuncs* pContext) ;
 
 	private:
         GLuint m_vao = 0;

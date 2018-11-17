@@ -2,6 +2,7 @@
 #include "Layer.h"
 #include "RainRenderingWindow.h"
 #include "BackgroundImg.h"
+#include "IMesh.h"
 
 namespace Rain{
 
@@ -38,17 +39,47 @@ namespace Rain{
 
 		m_mainLayer = new Layer();
 		pLayerManger->insertFront(m_mainLayer);
-		pLayerManger->setLayerName(m_backgroundLayer, MAIN_LAYER_NAME);
+		pLayerManger->setLayerName(m_mainLayer, MAIN_LAYER_NAME);
 
 		m_overlapLayer = new Layer();
 		pLayerManger->insertFront(m_overlapLayer);
 		pLayerManger->setLayerName(m_overlapLayer, OVERLAP_LAYER_NAME);
 	}
 
-	void RainView::onBeforeRenderingWindowUpdate(RainRenderingWindow* pView)
+	void RainView::onBeforeRenderingWindowUpdate(RainRenderingWindow* pRenderingWIndow)
 	{
+        RainContext context;
+        context.pGLContext = pRenderingWIndow;
+        context.pView = this;
 
+        for (auto it = m_newMeshes.begin(); it != m_newMeshes.end(); ++it)
+        {
+            m_meshes.push_back(*it);
+            (*it)->init(context);
+        }
+        m_newMeshes.clear();
+
+        for (auto it = m_meshes.begin(); it != m_meshes.end(); ++it)
+        {
+            (*it)->update(context);
+        }
 	}
 
+    void RainView::addMesh(IMesh* pMesh)
+    {
+        if (!pMesh)
+            return;
+
+        if (m_meshes.find(pMesh) != m_meshes.end())
+            return;
+
+        m_newMeshes.push_back(pMesh);
+    }
+
+    void RainView::removeMesh(IMesh* pMesh)
+    {
+        m_newMeshes.erase(pMesh);
+        m_meshes.erase(pMesh);
+    }
 }
 

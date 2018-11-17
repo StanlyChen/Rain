@@ -111,7 +111,7 @@ qtIncs = [
 "${QT_DIR}/include/QtGui",
 "${QT_DIR}/include/QtCore",
 ]
-thridInclude =["3rd/SOIL/include"]
+thridInclude =["3rd/SOIL/include","3rd/glm/include"]
 
 qtLibs =[ "${QT_DIR}/lib"]
 thirdLibs = ["3rd/SOIL/lib"]

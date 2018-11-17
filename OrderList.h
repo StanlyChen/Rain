@@ -80,7 +80,7 @@ namespace util
 		iterator find(const T& obj)
 		{
 			auto it_uniq = m_uniques.find(obj);
-			if (it_uniq == m_uniques.end())
+			if (it_uniq != m_uniques.end())
 			{
 				return it_uniq->second;
 			}
@@ -90,9 +90,8 @@ namespace util
 		const_iterator find(const T& obj) const
 		{
 			auto it_uniq = m_uniques.find(obj);
-			if (it_uniq == m_uniques.end())
+			if (it_uniq != m_uniques.end())
 			{
-				//TODO convert iterator to const_iterator
 				return it_uniq->second;
 			}
 			return m_list.end();
@@ -119,6 +118,12 @@ namespace util
 			}
 			return false;
 		}
+
+        void clear()
+        {
+            m_list.clear();
+            m_uniques.clear();
+        }
 
 	};
 }

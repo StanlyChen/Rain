@@ -8,6 +8,7 @@ namespace Rain
 {
 	class IRenderable;
 	class LayerManager;
+    class RainRenderingWindow;
 
 	const std::string DefaultLayerName = "";
 	const std::string BACKGROUND_LAYER_NAME = "BackgroundLayer";
@@ -19,7 +20,7 @@ namespace Rain
 	public:
 		void addRenderable(IRenderable* pRenderable);
 		void removeRenderable(IRenderable* pRenderable);
-		void render(RainOpenGLFuncs* pContext);
+		void render(RainRenderingWindow* pContext);
 		std::string getName() const;
 
 

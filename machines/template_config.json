@@ -1,4 +1,5 @@
 {
 	"QT_DIR": "",
-	"MSVS_WTP_VERSION": ""
+	"MSVS_WTP_VERSION": "",
+	"BOOST_INCLUDE_DIR":""
 }

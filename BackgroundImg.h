@@ -10,7 +10,7 @@ namespace Rain
 	class BackgroundImage : public IRenderable
 	{
 	public:
-		void render(RainOpenGLFuncs* pContext) override;
+		void render(RainRenderingWindow* pContext) override;
 		void create(RainOpenGLFuncs* pContext)  ;
 		void destory(RainOpenGLFuncs* pContext) ;
 
@@ -22,14 +22,19 @@ namespace Rain
 		BackgroundRenderMethod* m_renderMothod = nullptr;
 	};
 
+    const std::string BackgroundRMP_IMAGE_LOC = "RM::Background::ImageLoc";
 	class BackgroundRenderMethod : public IRenderMethod
 	{
+    public:
+       
 	public:
 		void create(RainOpenGLFuncs* pContext) override;
-		void bind(RainOpenGLFuncs* pContext);
-		void unbind(RainOpenGLFuncs* pContext);
+		void bind(RainOpenGLFuncs* pContext) override;
+		void unbind(RainOpenGLFuncs* pContext) override;
 
-        GLint getImgLoc() { return m_img_loc; }
+        void updateParams(RainOpenGLFuncs* pContext, ShaderParams& params);
+
+
 	private:
 		GLuint m_vertexShader = 0;
 		GLuint m_fragShader = 0;

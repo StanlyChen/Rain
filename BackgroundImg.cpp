@@ -3,6 +3,7 @@
 #include <SOIL.h>
 #include <QFile>
 #include <QImage>
+#include "RainRenderingWindow.h"
 
 namespace Rain
 {
@@ -68,14 +69,17 @@ namespace Rain
 
 	}
 
-	void BackgroundImage::render(RainOpenGLFuncs* pContext)
+	void BackgroundImage::render(RainRenderingWindow* pContext)
 	{
 		m_renderMothod->bind(pContext);
         pContext->glBindVertexArray(m_vao);
         pContext->glBindSampler(0, linearSampler);
         pContext->glBindTexture(GL_TEXTURE_2D, m_texture);
-        pContext->glUniform1i(m_renderMothod->getImgLoc(), 0);
 
+        ShaderParams params;
+        params[BackgroundRMP_IMAGE_LOC] = 0;
+        m_renderMothod->updateParams(pContext, params);
+ 
 		pContext->glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		m_renderMothod->unbind(pContext);
@@ -136,6 +140,11 @@ namespace Rain
 		pContext->glUseProgram(m_shaderProgram);
 	}
 
+    void BackgroundRenderMethod::updateParams(RainOpenGLFuncs* pContext, ShaderParams& params)
+    {
+        pContext->glUniform1i(m_img_loc, boost::get<GLint>(params.at(BackgroundRMP_IMAGE_LOC)));
+    }
+    
 	void BackgroundRenderMethod::unbind(RainOpenGLFuncs* pContext)
 	{
 		pContext->glUseProgram(0);

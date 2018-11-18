@@ -17,7 +17,7 @@ namespace Rain
 
         void create(RainOpenGLFuncs* pContext, Point3DList vertices, IndexList indices);
 
-        void render(RainOpenGLFuncs* pContext) override;
+        void render(RainRenderingWindow* pContext) override;
 
         void destroy(RainOpenGLFuncs* pContext);
 
@@ -33,13 +33,16 @@ namespace Rain
     {
     public:
         void create(RainOpenGLFuncs* pContext) override;
-        void bind(RainOpenGLFuncs* pContext);
-        void unbind(RainOpenGLFuncs* pContext);
-
+        void bind(RainOpenGLFuncs* pContext) override ;
+        void unbind(RainOpenGLFuncs* pContext) override;
+        void updateParams(RainOpenGLFuncs* pContext, ShaderParams& params) override;
     private:
         GLuint m_vertexShader = 0;
         GLuint m_fragShader = 0;
         GLuint m_shaderProgram = 0;
+
+        GLint m_projMatrixLoc = -1;
+        GLint m_viewMatrixLoc = -1;
     };
 
 }

@@ -2,8 +2,8 @@
 #include <QOpenGLWindow>
 #include <QTime>
 #include "RainOpenGL.h"
-
-
+#include "RainTypes.h"
+#include "MouseStatus.h"
 
 namespace Rain
 {
@@ -29,6 +29,13 @@ namespace Rain
 
 		LayerManager* getLayerManager();
 
+        glm::mat4x4 getProjMatrix();
+        glm::mat4x4 getViewMatrix();
+
+        void zoomin(float delta = 0.05f);
+        void zoomout(float delta = 0.05f);
+        void fitview();
+
 	signals:
 		void afterRenderingWindowInit(RainRenderingWindow*);
 		void beforeRenderingWindowUpdate(RainRenderingWindow*);
@@ -36,13 +43,23 @@ namespace Rain
     protected slots:
         void onFrameSwapped();
 
+    protected:
+        void keyPressEvent(QKeyEvent* ev) override;
+        void keyReleaseEvent(QKeyEvent* ev) override;
+
+        void mousePressEvent(QMouseEvent* ev) override;
+        void mouseReleaseEvent(QMouseEvent* ev) override;
+        void mouseMoveEvent(QMouseEvent* ev) override;
+        void wheelEvent(QWheelEvent *ev) override;
+
 	protected:
 		QOpenGLPaintDevice* m_paintDevice;
 		QTime               m_fpsTimer;
 		LayerManager*       m_layerManager;
 		RainView*           m_view;
         int                 m_lastFrameTime = 0;
-
+        float               m_scale = 1.f;
+        MouseStatus         m_mouseStatus;
 	};
 }
 

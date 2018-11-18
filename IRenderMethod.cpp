@@ -1,4 +1,5 @@
 #include "IRenderMethod.h"
+#include "RainRenderingWindow.h"
 
 namespace Rain
 {
@@ -102,4 +103,13 @@ namespace Rain
 
 		return result;
 	}
+
+
+    ShaderParams IRenderMethod::getAutoParams(RainRenderingWindow* pRenderWindow)
+    {
+        ShaderParams ret;
+        ret[RMP_ProjMatrix] = pRenderWindow->getProjMatrix();
+        ret[RMP_ViewMatrix] = pRenderWindow->getViewMatrix();
+        return ret;
+    }
 }

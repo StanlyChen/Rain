@@ -1,7 +1,12 @@
+#include <gtc/matrix_transform.hpp>
 #include "RainRenderingWindow.h"
 #include <QOpenGLPaintDevice>
 #include < QPainter>
 #include "Layer.h"
+#include "RainTypes.h"
+#include <QWheelEvent>
+#include <QMouseEvent>
+#include <iostream>
 
 namespace Rain
 {
@@ -86,5 +91,75 @@ namespace Rain
     void RainRenderingWindow::onFrameSwapped()
     {
         m_lastFrameTime = m_fpsTimer.restart();
+    }
+
+    glm::mat4x4 RainRenderingWindow::getProjMatrix()
+    {
+        return glm::mat4();
+    }
+
+    glm::mat4x4 RainRenderingWindow::getViewMatrix()
+    {
+        return glm::scale(glm::mat4(), glm::vec3(1.f, 1.f, 1.f)*m_scale);
+    }
+
+    void RainRenderingWindow::keyPressEvent(QKeyEvent* ev)
+    {
+
+    }
+
+    void RainRenderingWindow::keyReleaseEvent(QKeyEvent* ev)
+    {
+
+    }
+
+    void RainRenderingWindow::mousePressEvent(QMouseEvent* ev)
+    {
+        m_mouseStatus.onMouseButtonPress(ev->button());
+        if (m_mouseStatus.isLeftRightDown())
+            fitview();
+    }
+
+    void RainRenderingWindow::mouseReleaseEvent(QMouseEvent* ev)
+    {
+        m_mouseStatus.onMouseButtonRelease(ev->button());
+    }
+
+    void RainRenderingWindow::mouseMoveEvent(QMouseEvent* ev) 
+    {
+
+    }
+
+    void RainRenderingWindow::wheelEvent(QWheelEvent *ev)
+    {
+        // x() is always 0
+        float angle = ev->angleDelta().y();
+        if (angle == 120) // roll up, zoom in
+        {
+            zoomin();
+        }
+        else if ( angle == -120 ) // roll down, zoom out
+        {
+            zoomout();
+        }
+        ev->accept();
+    }
+
+    void RainRenderingWindow::zoomin( float delta )
+    {
+        m_scale *= (1+delta);
+        update();
+    }
+
+    void RainRenderingWindow::zoomout(float delta)
+    {
+        m_scale *= (1-delta);
+        update();
+    }
+
+    void RainRenderingWindow::fitview()
+    {
+        m_scale = 1.f;
+        update();
     }
 }

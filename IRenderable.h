@@ -1,7 +1,9 @@
 #pragma once
 #include "RainOpenGL.h"
+
 namespace Rain
 {
+    class RainRenderingWindow;
 
 	enum RainPrimType
 	{
@@ -11,19 +13,11 @@ namespace Rain
 		Quad,
 	};
 
-	//TODO introduce glm
-	struct RainPoint3D
-	{
-		float x;
-		float y;
-		float z;
-	};
-
 
 	class IRenderable
 	{
 	public:
 		virtual ~IRenderable() {};
-		virtual void render(RainOpenGLFuncs* pContext) = 0 {};
+		virtual void render(RainRenderingWindow* pContext) = 0 {};
 	};
 }

@@ -1,6 +1,7 @@
 #include <Layer.h>
 #include <IRenderable.h>
 #include "RainOpenGL.h"
+#include "RainRenderingWindow.h"
 
 namespace Rain
 {
@@ -15,7 +16,7 @@ namespace Rain
 		m_renderList.erase(pRenderable);
 	}
 
-	void Layer::render( RainOpenGLFuncs* pContext)
+	void Layer::render(RainRenderingWindow* pContext)
 	{
 		for (auto renderObj : m_renderList)
 		{

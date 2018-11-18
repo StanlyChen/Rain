@@ -1,9 +1,11 @@
 #pragma once
 #include "RainOpenGL.h"
 #include <string>
+#include <RainTypes.h>
 
 namespace Rain
 {
+    class RainRenderingWindow;
 	struct ShaderCompileResult
 	{
 		bool bSuccess = false;
@@ -14,17 +16,24 @@ namespace Rain
 		GLuint program = 0;
 	};
 
+    const std::string RMP_ViewMatrix = "RMP::ViewMatrix";
+    const std::string RMP_ProjMatrix = "RMP::ProjMatrix";
+
 	class IRenderMethod
 	{
 	public:
 		virtual ~IRenderMethod() {};
 		virtual void reload(RainOpenGLFuncs* pContext) {};
 		virtual void create(RainOpenGLFuncs* pContext) {};
-
+        virtual void bind(RainOpenGLFuncs* pContext) {};
+        virtual void unbind(RainOpenGLFuncs* pContext) {};
+        virtual void updateParams(RainOpenGLFuncs* pContext, ShaderParams& params) {};
 		
         static  ShaderCompileResult buildShaderProgram(RainOpenGLFuncs* pContext, const char* vertexStr = nullptr, const char* fragStr = nullptr, const char* gemoStr = nullptr, std::function<void(RainOpenGLFuncs*, ShaderCompileResult&)> preLinkCallback = {} );
 		static  ShaderCompileResult clearFailedBuild(RainOpenGLFuncs* pContext,  ShaderCompileResult& result);
 		static bool compileShader(RainOpenGLFuncs* pContext, GLuint shader, const char* source, std::string& errorMsg);
+
+        static ShaderParams getAutoParams(RainRenderingWindow* pRenderWindow);
 	};
 }
 

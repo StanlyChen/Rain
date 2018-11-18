@@ -1,4 +1,5 @@
 {
 	"QT_DIR":"G:\\Qt\\5.11.2\\msvc2017_64",
-	"MSVS_WTP_VERSION":"10.0.16299.0"
+	"MSVS_WTP_VERSION":"10.0.16299.0",
+	"BOOST_INCLUDE_DIR":"G:\\boost\\boost_ouput\\include"
 }

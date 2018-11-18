@@ -1,5 +1,6 @@
 #include "TirangleRenderable.h"
 #include <iostream>
+#include "RainRenderingWindow.h"
 
 namespace Rain
 {
@@ -34,9 +35,10 @@ namespace Rain
         m_triangleRenderMethod->create(pContext);
     }
 
-    void TriangleRenderable::render(RainOpenGLFuncs* pContext)
+    void TriangleRenderable::render(RainRenderingWindow* pContext)
     {
         m_triangleRenderMethod->bind(pContext);
+        m_triangleRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(pContext) );
         pContext->glBindVertexArray(m_vao);
         pContext->glDrawElements(GL_TRIANGLES, m_triangleCount * 3, GL_UNSIGNED_INT, 0);
         m_triangleRenderMethod->unbind(pContext);
@@ -55,10 +57,13 @@ namespace Rain
         const char* vertexShaderStr = R"(
 			#version 450 core
 
+            uniform mat4x4 viewMatrix;
+            uniform mat4x4 projMatrix;
+
 			layout(location =0) in vec3 position;
 			void main()
 			{
-				gl_Position = vec4(position, 1.0);
+				gl_Position = viewMatrix*projMatrix*vec4(position, 1.0);
 			}
 		)";
 
@@ -79,6 +84,9 @@ namespace Rain
             m_vertexShader = ret.vertexShader;
             m_fragShader = ret.fragShader;
             m_shaderProgram = ret.program;
+
+            m_viewMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "viewMatrix");
+            m_projMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "projMatrix");
         }
         else
         {
@@ -92,10 +100,24 @@ namespace Rain
         pContext->glUseProgram(m_shaderProgram);
     }
 
+    void TriangleRenderMethod::updateParams(RainOpenGLFuncs* pContext, ShaderParams& params)
+    {
+        if (m_viewMatrixLoc == -1
+            || m_projMatrixLoc == -1)
+            return;
+
+        auto viewMatrix = boost::get<glm::mat4x4>(params.at(RMP_ViewMatrix));
+        pContext->glUniformMatrix4fv(m_viewMatrixLoc, 1, false, reinterpret_cast<float*>(&viewMatrix));
+
+        auto projMatrix =boost::get<glm::mat4x4>(params.at(RMP_ProjMatrix));
+        pContext->glUniformMatrix4fv(m_projMatrixLoc, 1, false, reinterpret_cast<float*>(&projMatrix));
+    }
+
     void TriangleRenderMethod::unbind(RainOpenGLFuncs* pContext)
     {
         pContext->glUseProgram(0);
     }
+
 
 }
 

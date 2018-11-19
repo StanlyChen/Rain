@@ -100,7 +100,9 @@ namespace Rain
 
     glm::mat4x4 RainRenderingWindow::getViewMatrix()
     {
-        return glm::scale(glm::mat4(), glm::vec3(1.f, 1.f, 1.f)*m_scale);
+        return glm::scale(glm::mat4(), glm::vec3(1.f, 1.f, 1.f)*m_scale)
+            * glm::translate(glm::mat4(), glm::vec3( m_translate, 0 ))
+            * m_rotatationMatrix;
     }
 
     void RainRenderingWindow::keyPressEvent(QKeyEvent* ev)
@@ -115,6 +117,7 @@ namespace Rain
 
     void RainRenderingWindow::mousePressEvent(QMouseEvent* ev)
     {
+        m_mouseStatus.setPosition(ev->localPos());
         m_mouseStatus.onMouseButtonPress(ev->button());
         if (m_mouseStatus.isLeftRightDown())
             fitview();
@@ -122,12 +125,27 @@ namespace Rain
 
     void RainRenderingWindow::mouseReleaseEvent(QMouseEvent* ev)
     {
+        m_mouseStatus.setPosition(ev->localPos());
         m_mouseStatus.onMouseButtonRelease(ev->button());
     }
 
     void RainRenderingWindow::mouseMoveEvent(QMouseEvent* ev) 
     {
-
+        m_mouseStatus.setPosition(ev->localPos());
+        if (m_mouseStatus.isMiddleDown())
+        {
+            QVector2D delta = m_mouseStatus.getLastDeltaPosition();
+            //
+            float pitchDegree = 720.0f * delta.y() / size().height();
+            float yawDegree = 720.0f * delta.x() / size().width();
+            rotate(pitchDegree, yawDegree);
+        }
+        else if (m_mouseStatus.isRightDown())
+        {
+            QVector2D delta = m_mouseStatus.getLastDeltaPosition();
+            //screen's original is at the left-top
+            pan(delta.x()*0.01f, -delta.y()*0.01f);
+        }
     }
 
     void RainRenderingWindow::wheelEvent(QWheelEvent *ev)
@@ -157,9 +175,35 @@ namespace Rain
         update();
     }
 
+    void RainRenderingWindow::rotate(float pitch, float yaw)
+    {
+        auto inverseMatrix = glm::inverse(m_rotatationMatrix);
+        if (pitch)
+        {
+            glm::vec4 rotationAxis = inverseMatrix *glm::vec4(1, 0, 0, 0);
+            m_rotatationMatrix = glm::rotate(m_rotatationMatrix, glm::radians(pitch), glm::vec3(rotationAxis.x, rotationAxis.y, rotationAxis.z ));
+        }
+            
+        if (yaw)
+        {
+            glm::vec4 rotationAxis = inverseMatrix * glm::vec4(0, 1, 0, 0);
+            m_rotatationMatrix = glm::rotate(m_rotatationMatrix, glm::radians(yaw), glm::vec3(rotationAxis.x, rotationAxis.y, rotationAxis.z) );
+        }
+
+        update();
+    }
+
     void RainRenderingWindow::fitview()
     {
         m_scale = 1.f;
+        m_rotatationMatrix = glm::mat4x4();
+        m_translate = glm::vec2();
+        update();
+    }
+
+    void  RainRenderingWindow::pan(float right_offset, float up_offset)
+    {
+        m_translate += glm::vec2(right_offset, up_offset);
         update();
     }
 }

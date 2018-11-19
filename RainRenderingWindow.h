@@ -34,6 +34,8 @@ namespace Rain
 
         void zoomin(float delta = 0.05f);
         void zoomout(float delta = 0.05f);
+        void rotate(float pitch, float yaw);
+        void pan(float right_offset, float up_offset);
         void fitview();
 
 	signals:
@@ -60,6 +62,8 @@ namespace Rain
         int                 m_lastFrameTime = 0;
         float               m_scale = 1.f;
         MouseStatus         m_mouseStatus;
+        glm::mat4x4         m_rotatationMatrix;
+        glm::vec2           m_translate;
 	};
 }
 

@@ -34,15 +34,15 @@ namespace Rain
         Point3D vertex;
         vertex.x = 0;
         vertex.y = 0.5f;
-        vertex.z = 0.5f;
+        vertex.z = 0.f;
         vertices.push_back(vertex);
         vertex.x = 0.5;
         vertex.y = -0.5f;
-        vertex.z = 0.5f;
+        vertex.z = 0.f;
         vertices.push_back(vertex);
         vertex.x = -0.5;
         vertex.y = -0.5f;
-        vertex.z = 0.5f;
+        vertex.z = 0.f;
         vertices.push_back(vertex);
 
         IndexList indices;

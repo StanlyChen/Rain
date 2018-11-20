@@ -49,6 +49,7 @@ namespace Rain
 
         util::OrderList<IMesh*>  m_meshes;
         util::OrderList<IMesh*>  m_newMeshes;
+        util::OrderList<IMesh*>  m_deleteMeshes;
 	};
 }
 

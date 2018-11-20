@@ -13,6 +13,7 @@ namespace Rain
 
         void init(RainContext context) override;
         void update(RainContext context) override;
+        void release(RainContext context) override;
 
     public:
         Point3DList m_vertices;

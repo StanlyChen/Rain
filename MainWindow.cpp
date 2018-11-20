@@ -2,10 +2,11 @@
 #include <QTextEdit>
 #include <RainRenderingWindow.h>
 #include <QHBoxLayout>
+#include <QAction>
+#include <QFileDialog>
+#include "ModelDisplayManager.h"
 
-//------test-----------
-#include "TriangleMesh.h"
-//-------
+
 
 namespace Rain
 {
@@ -13,6 +14,8 @@ namespace Rain
 		: QMainWindow(parent)
 	{
 		ui.setupUi(this);
+
+        initMenu();
 
 		QWidget* centerWidet = new QWidget(this);
 		setCentralWidget(centerWidet);
@@ -26,32 +29,39 @@ namespace Rain
 		centerWidet->setLayout(layout);
 
 		m_view = new RainView();
+        m_mdm = new ModelDisplayManager(this);
 
 		connect(m_renderingWindow, SIGNAL(afterRenderingWindowInit(RainRenderingWindow*)), m_view, SLOT(onAfterRenderingWindowInit(RainRenderingWindow*)));
 		connect(m_renderingWindow, SIGNAL(beforeRenderingWindowUpdate(RainRenderingWindow*)), m_view, SLOT(onBeforeRenderingWindowUpdate(RainRenderingWindow*)));
-
-        Point3DList vertices;
-        Point3D vertex;
-        vertex.x = 0;
-        vertex.y = 0.5f;
-        vertex.z = 0.f;
-        vertices.push_back(vertex);
-        vertex.x = 0.5;
-        vertex.y = -0.5f;
-        vertex.z = 0.f;
-        vertices.push_back(vertex);
-        vertex.x = -0.5;
-        vertex.y = -0.5f;
-        vertex.z = 0.f;
-        vertices.push_back(vertex);
-
-        IndexList indices;
-        indices.push_back(0);
-        indices.push_back(1);
-        indices.push_back(2);
-
-        TriangleMesh* pFirstTriangle = new TriangleMesh(std::move(vertices), std::move( indices) ); 
-        m_view->addMesh(pFirstTriangle);
-
 	}
+
+    void MainWindow::initMenu()
+    {
+        QMenu* menuFile = new QMenu("File", ui.menuBar);
+        ui.menuBar->addAction(menuFile->menuAction());
+
+        QAction* actionOpen = new QAction("Open", this);
+        menuFile->addAction(actionOpen);
+        connect(actionOpen, SIGNAL(triggered(bool)), this, SLOT(actionOpenTriggered(bool)));
+
+        QAction* actionClose = new QAction("Close", this);
+        menuFile->addAction(actionClose);
+        connect(actionClose, SIGNAL(triggered(bool)), this, SLOT(actionCloseTriggered(bool)));
+
+    }
+
+    void MainWindow::actionOpenTriggered(bool checked/* = false*/)
+    {
+        QString fileName = QFileDialog::getOpenFileName(this, "Open the file");
+        if (fileName.isEmpty())
+            return;
+        m_mdm->importModel( m_view, fileName.toStdString());
+
+    }
+
+    void MainWindow::actionCloseTriggered(bool checked/* = false*/)
+    {
+        m_mdm->close(m_view);
+    }
+
 }

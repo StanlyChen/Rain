@@ -14,6 +14,7 @@ namespace Rain
     public:
         virtual void init(RainContext context) {} ;
         virtual void update(RainContext context)  {};
+        virtual void release(RainContext context) {};
     };
 
 }

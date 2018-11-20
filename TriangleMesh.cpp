@@ -31,6 +31,16 @@ namespace Rain
         
     }
 
+    void TriangleMesh::release(RainContext context)
+    {
+        if (m_pRenderable)
+        {
+            m_pRenderable->destroy(context.pGLContext);
+            context.pView->getMainLayer()->removeRenderable(m_pRenderable);
+        }
+        
+    }
+
 }
 
 

@@ -144,7 +144,7 @@ namespace Rain
         {
             QVector2D delta = m_mouseStatus.getLastDeltaPosition();
             //screen's original is at the left-top
-            pan(delta.x()*0.01f, -delta.y()*0.01f);
+            pan(delta.x()*2/size().width(), -delta.y() * 2 / size().height());
         }
     }
 

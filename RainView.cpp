@@ -52,6 +52,12 @@ namespace Rain{
         context.pGLContext = pRenderingWIndow;
         context.pView = this;
 
+        for (auto it = m_deleteMeshes.begin(); it != m_deleteMeshes.end(); ++it)
+        {
+            (*it)->release(context);
+        }
+        m_deleteMeshes.clear();
+
         for (auto it = m_newMeshes.begin(); it != m_newMeshes.end(); ++it)
         {
             m_meshes.push_back(*it);
@@ -70,16 +76,23 @@ namespace Rain{
         if (!pMesh)
             return;
 
+        if (m_deleteMeshes.find(pMesh) != m_deleteMeshes.end())
+            return;
+
         if (m_meshes.find(pMesh) != m_meshes.end())
             return;
 
         m_newMeshes.push_back(pMesh);
+        m_window->update();
     }
 
     void RainView::removeMesh(IMesh* pMesh)
     {
         m_newMeshes.erase(pMesh);
         m_meshes.erase(pMesh);
+        m_deleteMeshes.push_back(pMesh);
+
+        m_window->update();
     }
 }
 

@@ -63,28 +63,57 @@ namespace Rain
 			layout(location =0) in vec3 position;
 			void main()
 			{
-				gl_Position = viewMatrix*projMatrix*vec4(position, 1.0);
+				gl_Position = projMatrix*viewMatrix*vec4(position, 1.0);
 			}
 		)";
+
+        const char* geomtryShaderStr = R"(
+            #version 450 core
+
+            layout(triangles) in;
+            layout(triangle_strip, max_vertices = 3) out;
+
+
+            layout( location = 0 ) out vec3 outNormal;
+
+            vec3 getNormal( vec3 v1, vec3 v2, vec3 v3)
+            {
+                return normalize( cross( v3-v1, v2 - v1));
+            }
+
+            void main()
+            {
+                outNormal = getNormal( vec3(gl_in[0].gl_Position) , vec3(gl_in[1].gl_Position), vec3(gl_in[2].gl_Position) );
+                gl_Position = gl_in[0].gl_Position;
+                EmitVertex(); 
+                gl_Position = gl_in[1].gl_Position;
+                EmitVertex(); 
+                gl_Position = gl_in[2].gl_Position;
+                EmitVertex();
+                EndPrimitive();
+            }
+
+           )";
 
         const char* fragShaderStr = R"(
 			#version 450 core
 
+            layout( location = 0 ) in vec3 normal;
 			layout( location  = 0) out vec4 outColor;
             
 			void main()
 			{
-                outColor = vec4( 1,1,0, 1 );
+                outColor = vec4( normal, 1 );
 			}
 		)";
 
-        ShaderCompileResult ret = buildShaderProgram(pContext, vertexShaderStr, fragShaderStr);
+        ShaderCompileResult ret = buildShaderProgram(pContext, vertexShaderStr, fragShaderStr, geomtryShaderStr);
         if (ret.bSuccess)
         {
             m_vertexShader = ret.vertexShader;
             m_fragShader = ret.fragShader;
             m_shaderProgram = ret.program;
-
+            m_gsShader = ret.geometryShader;
             m_viewMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "viewMatrix");
             m_projMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "projMatrix");
         }

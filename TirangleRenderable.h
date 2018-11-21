@@ -39,6 +39,7 @@ namespace Rain
     private:
         GLuint m_vertexShader = 0;
         GLuint m_fragShader = 0;
+        GLuint m_gsShader = 0;
         GLuint m_shaderProgram = 0;
 
         GLint m_projMatrixLoc = -1;

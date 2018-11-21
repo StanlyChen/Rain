@@ -33,11 +33,23 @@ namespace Rain
         vertex.y = -0.5f;
         vertex.z = 0.f;
         vertices.push_back(vertex);
-        
+        vertex.x = 0;
+        vertex.y = 0;
+        vertex.z = 0.5f;
+        vertices.push_back(vertex);
+
         IndexList indices;
         indices.push_back(0);
         indices.push_back(1);
         indices.push_back(2);
+
+        indices.push_back(3);
+        indices.push_back(0);
+        indices.push_back(2);
+
+        indices.push_back(0);
+        indices.push_back(3);
+        indices.push_back(1);
 
         TriangleMesh * pFirstTriangle = new TriangleMesh(std::move(vertices), std::move(indices));
         pView->addMesh(pFirstTriangle);

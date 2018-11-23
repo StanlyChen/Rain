@@ -1,19 +1,19 @@
-#include "TirangleRenderable.h"
+#include "LineRenderable.h"
 #include <iostream>
 #include "RainRenderingWindow.h"
 
 namespace Rain
 {
-    TriangleRenderable::TriangleRenderable()
+    LineRenderable::LineRenderable()
     {
     }
 
 
-    TriangleRenderable::~TriangleRenderable()
+    LineRenderable::~LineRenderable()
     {
     }
 
-    void TriangleRenderable::create(RainOpenGLFuncs* pContext, Point3DList vertices, IndexList indices)
+    void LineRenderable::create(RainOpenGLFuncs* pContext, Point3DList vertices, IndexList indices)
     {
         pContext->glGenVertexArrays(1, &m_vao);
         pContext->glBindVertexArray(m_vao);
@@ -29,23 +29,23 @@ namespace Rain
 
         pContext->glBindVertexArray(0);
 
-        m_triangleCount = indices.size() / 3;
+        m_lineCount = indices.size() / 2;
 
-        m_triangleRenderMethod = new TriangleRenderMethod();
-        m_triangleRenderMethod->create(pContext);
+        m_lineRenderMethod = new LineRenderMethod();
+        m_lineRenderMethod->create(pContext);
     }
 
-    void TriangleRenderable::render(RainRenderingWindow* pContext)
+    void LineRenderable::render(RainRenderingWindow* pContext)
     {
         pContext->glEnable(GL_DEPTH_TEST);
-        m_triangleRenderMethod->bind(pContext);
-        m_triangleRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(pContext) );
+        m_lineRenderMethod->bind(pContext);
+        m_lineRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(pContext));
         pContext->glBindVertexArray(m_vao);
-        pContext->glDrawElements(GL_TRIANGLES, m_triangleCount * 3, GL_UNSIGNED_INT, 0);
-        m_triangleRenderMethod->unbind(pContext);
+        pContext->glDrawElements(GL_LINES, m_lineCount * 2, GL_UNSIGNED_INT, 0);
+        m_lineRenderMethod->unbind(pContext);
     }
 
-    void TriangleRenderable::destroy(RainOpenGLFuncs* pContext)
+    void LineRenderable::destroy(RainOpenGLFuncs* pContext)
     {
         pContext->glDeleteVertexArrays(1, &m_vao);
         pContext->glDeleteBuffers(1, &m_vbo);
@@ -53,44 +53,34 @@ namespace Rain
     }
 
 
-    void TriangleRenderMethod::create(RainOpenGLFuncs* pContext)
+    void LineRenderMethod::create(RainOpenGLFuncs* pContext)
     {
         const char* vertexShaderStr = R"(
 			#version 450 core
 
             uniform mat4x4 viewMatrix;
-
+            uniform mat4x4 projMatrix;
 
 			layout(location =0) in vec3 position;
 			void main()
 			{
-				gl_Position = viewMatrix*vec4(position, 1.0);
+				gl_Position = projMatrix*viewMatrix*vec4(position, 1.0);
 			}
 		)";
 
         const char* geomtryShaderStr = R"(
             #version 450 core
 
-            layout(triangles) in;
-            layout(triangle_strip, max_vertices = 3) out;
-
-            uniform mat4x4 projMatrix;
-            layout( location = 0 ) out vec3 outNormal;
-
-
-            vec3 getNormal( vec3 v1, vec3 v2, vec3 v3)
-            {
-                return normalize( cross( v3-v1, v2 - v1));
-            }
+            layout(lines) in;
+            layout(line_strip, max_vertices = 2) out;
 
             void main()
             {
-                outNormal = getNormal( vec3(gl_in[0].gl_Position) , vec3(gl_in[1].gl_Position), vec3(gl_in[2].gl_Position) );
-                gl_Position = projMatrix*gl_in[0].gl_Position;
+                gl_Position = gl_in[0].gl_Position;
                 EmitVertex(); 
-                gl_Position = projMatrix*gl_in[1].gl_Position;
+                gl_Position = gl_in[1].gl_Position;
                 EmitVertex(); 
-                gl_Position = projMatrix*gl_in[2].gl_Position;
+                gl_Position = gl_in[1].gl_Position;
                 EmitVertex();
                 EndPrimitive();
             }
@@ -99,17 +89,11 @@ namespace Rain
 
         const char* fragShaderStr = R"(
 			#version 450 core
-
-            layout( location = 0 ) in vec3 normal;
 			layout( location  = 0) out vec4 outColor;
             
-            uniform vec3 ambient = vec3(0.3, 0.3, 0.3);
-            uniform vec3 diffuse_l = vec3(0.7, 0, 0 );
-
 			void main()
 			{
-                float diffuse = abs( dot( vec3(0,0,1) , -normal) );
-                outColor = vec4( ambient + diffuse_l*diffuse, 1 );
+                outColor = vec4( 0,0,0, 1 );
 			}
 		)";
 
@@ -130,12 +114,12 @@ namespace Rain
     }
 
 
-    void TriangleRenderMethod::bind(RainOpenGLFuncs* pContext)
+    void LineRenderMethod::bind(RainOpenGLFuncs* pContext)
     {
         pContext->glUseProgram(m_shaderProgram);
     }
 
-    void TriangleRenderMethod::updateParams(RainOpenGLFuncs* pContext, ShaderParams& params)
+    void LineRenderMethod::updateParams(RainOpenGLFuncs* pContext, ShaderParams& params)
     {
         if (m_viewMatrixLoc == -1
             || m_projMatrixLoc == -1)
@@ -144,11 +128,11 @@ namespace Rain
         auto viewMatrix = boost::get<glm::mat4x4>(params.at(RMP_ViewMatrix));
         pContext->glUniformMatrix4fv(m_viewMatrixLoc, 1, false, reinterpret_cast<float*>(&viewMatrix));
 
-        auto projMatrix =boost::get<glm::mat4x4>(params.at(RMP_ProjMatrix));
+        auto projMatrix = boost::get<glm::mat4x4>(params.at(RMP_ProjMatrix));
         pContext->glUniformMatrix4fv(m_projMatrixLoc, 1, false, reinterpret_cast<float*>(&projMatrix));
     }
 
-    void TriangleRenderMethod::unbind(RainOpenGLFuncs* pContext)
+    void LineRenderMethod::unbind(RainOpenGLFuncs* pContext)
     {
         pContext->glUseProgram(0);
     }

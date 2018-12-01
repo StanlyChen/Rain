@@ -37,10 +37,17 @@ namespace Rain
 
     void LineRenderable::render(RainRenderingWindow* pContext)
     {
+        //pContext->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //pContext->glEnable(GL_BLEND);
+
         pContext->glEnable(GL_DEPTH_TEST);
         m_lineRenderMethod->bind(pContext);
         m_lineRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(pContext));
         pContext->glBindVertexArray(m_vao);
+        
+        pContext->glEnable(GL_LINE_SMOOTH);
+        pContext->glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
         pContext->glDrawElements(GL_LINES, m_lineCount * 2, GL_UNSIGNED_INT, 0);
         m_lineRenderMethod->unbind(pContext);
     }
@@ -72,15 +79,29 @@ namespace Rain
             #version 450 core
 
             layout(lines) in;
-            layout(line_strip, max_vertices = 2) out;
-
+            layout(triangle_strip, max_vertices = 4) out;
+            uniform float resolution_x = 800;
+            uniform float resolution_y = 600;
+            uniform float linewidth = 10;
             void main()
             {
-                gl_Position = gl_in[0].gl_Position;
+                vec4 startPoint = gl_in[0].gl_Position/gl_in[0].gl_Position.w;
+                vec4 endPoint = gl_in[1].gl_Position/gl_in[1].gl_Position.w;
+                vec2 dir = endPoint.xy - startPoint.xy;
+                vec2 normal = normalize(vec2(dir.y, -dir.x));
+                float half_width = linewidth/2;
+
+                gl_Position = startPoint;
+                gl_Position.xy += normal*half_width * 2/resolution_x;
                 EmitVertex(); 
-                gl_Position = gl_in[1].gl_Position;
+                gl_Position = endPoint;
+                gl_Position.xy += normal*half_width * 2/resolution_x;
                 EmitVertex(); 
-                gl_Position = gl_in[1].gl_Position;
+                gl_Position = startPoint;
+                gl_Position.xy -= normal*half_width * 2/resolution_x;
+                EmitVertex();
+                gl_Position = endPoint;
+                gl_Position.xy -= normal*half_width * 2/resolution_x;
                 EmitVertex();
                 EndPrimitive();
             }
@@ -130,6 +151,8 @@ namespace Rain
 
         auto projMatrix = boost::get<glm::mat4x4>(params.at(RMP_ProjMatrix));
         pContext->glUniformMatrix4fv(m_projMatrixLoc, 1, false, reinterpret_cast<float*>(&projMatrix));
+
+         pContext->glLineWidth(1);
     }
 
     void LineRenderMethod::unbind(RainOpenGLFuncs* pContext)

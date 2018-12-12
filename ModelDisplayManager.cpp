@@ -1,6 +1,7 @@
 #include "ModelDisplayManager.h"
 #include "TriangleMesh.h"
 #include "LineMesh.h"
+#include "PointMesh.h"
 #include "RainView.h"
 
 namespace Rain
@@ -57,9 +58,10 @@ namespace Rain
         indices.push_back(1);
 
         Point3DList lineVertices = vertices;
+        Point3DList pointVertices = vertices;
 
         TriangleMesh * pFirstTriangle = new TriangleMesh(std::move(vertices), std::move(indices));
-        pView->addMesh(pFirstTriangle);
+        
 
         MeshRecord record;
         record.pMesh = pFirstTriangle;
@@ -86,12 +88,26 @@ namespace Rain
         lineIndices.push_back(2);
 
         LineMesh * pLineMesh = new LineMesh(std::move(lineVertices), std::move(lineIndices));
-        pView->addMesh(pLineMesh);
 
         MeshRecord record2;
         record2.pMesh = pLineMesh;
         record2.pView = pView;
         m_meshes.push_back(std::move(record2));
+
+
+        IndexList pointIndices;
+        pointIndices.push_back(0);
+        pointIndices.push_back(1);
+        pointIndices.push_back(2);
+        pointIndices.push_back(3);
+
+        PointMesh* pPointMesh = new PointMesh(std::move(pointVertices), std::move(pointIndices));
+        
+        m_meshes.push_back(MeshRecord{pLineMesh, pView});
+
+        pView->addMesh(pLineMesh);
+        pView->addMesh(pPointMesh);
+        pView->addMesh(pFirstTriangle);
     }
 
     void ModelDisplayManager::close(RainView* pView)

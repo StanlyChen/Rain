@@ -6,14 +6,14 @@
 
 namespace Rain
 {
-    class LineRenderMethod;
+    class PointRenderMethod;
 
-    class LineRenderable : public IRenderable
+    class PointRenderable : public IRenderable
     {
     public:
-        LineRenderable();
+        PointRenderable();
 
-        ~LineRenderable();
+        ~PointRenderable();
 
 
         void create(RainOpenGLFuncs* pContext, Point3DList vertices, IndexList indices);
@@ -26,20 +26,21 @@ namespace Rain
         GLuint m_vao = 0;
         GLuint m_vbo = 0;
         GLuint m_ebo = 0;
-        GLuint m_lineCount = 0;
-        LineRenderMethod* m_lineRenderMethod;
+        GLuint m_pointCount = 0;
+        PointRenderMethod* m_pointRenderMethod;
     };
 
-    class LineRenderMethod : public IRenderMethod
+    class PointRenderMethod : public IRenderMethod
     {
     public:
         void create(RainOpenGLFuncs* pContext) override;
         void bind(RainOpenGLFuncs* pContext) override;
         void unbind(RainOpenGLFuncs* pContext) override;
         void updateParams(RainOpenGLFuncs* pContext, ShaderParams& params) override;
+
     private:
-        float m_LineWidth = 3;
-        glm::vec3 m_color = { 0,0,0.0f };
+        float m_pointSize = 5;
+        glm::vec3 m_color = { 1,1,0 };
 
         GLuint m_vertexShader = 0;
         GLuint m_fragShader = 0;
@@ -48,12 +49,9 @@ namespace Rain
 
         GLint m_projMatrixLoc = -1;
         GLint m_viewMatrixLoc = -1;
-        GLint m_lineWidthLoc = -1;
+        GLint m_pointSizeLoc = -1;
         GLint m_inverseResulotionLoc = -1;
         GLint m_colorLoc = -1;
     };
 
 }
-
-
-

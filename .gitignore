@@ -1,5 +1,7 @@
 build/*
 .sconsign.dblite
+*.db
+*.opendb
 .vs/*
 *.sln
 *.vcxproj

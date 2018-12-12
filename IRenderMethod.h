@@ -18,6 +18,13 @@ namespace Rain
 
     const std::string RMP_ViewMatrix = "RMP::ViewMatrix";
     const std::string RMP_ProjMatrix = "RMP::ProjMatrix";
+    const std::string RMP_InverseResolutionX = "RMP::InverseResolutionX";
+    const std::string RMP_InverseResolutionY = "RMP::InverseResolutionY";
+
+
+    const float POINT_DEPTH_BIAS = 0.0;
+    const float Line_DEPTH_BIAS = 1.0f;
+    const float TRIANGLE_DEPTH_BIAS = 2.0f;
 
 	class IRenderMethod
 	{

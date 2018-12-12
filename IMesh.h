@@ -4,7 +4,6 @@
 
 namespace Rain
 {
-    
     class IMesh
     {
     public:

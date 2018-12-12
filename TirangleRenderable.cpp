@@ -38,6 +38,10 @@ namespace Rain
     void TriangleRenderable::render(RainRenderingWindow* pContext)
     {
         pContext->glEnable(GL_DEPTH_TEST);
+        
+        pContext->glEnable(GL_POLYGON_OFFSET_FILL);
+        pContext->glPolygonOffset(TRIANGLE_DEPTH_BIAS, TRIANGLE_DEPTH_BIAS);
+
         m_triangleRenderMethod->bind(pContext);
         m_triangleRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(pContext) );
         pContext->glBindVertexArray(m_vao);

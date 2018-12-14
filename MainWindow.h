@@ -22,6 +22,7 @@ namespace Rain
     public slots:
     void actionOpenTriggered(bool checked = false);
     void actionCloseTriggered(bool checked = false);
+    void actionEditShaderTriggered(bool checked = false);
 
 	private:
 		Ui::MainWindowClass  ui;

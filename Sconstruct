@@ -81,7 +81,7 @@ env = Environment( BUILDERS={"MyMoc": moc, "MyUic":uic, "MyRcc": rcc },
 
 generateNode = []
 
-mocfiles = ["MainWindow","RainRenderingWindow","RainView"]
+mocfiles = ["MainWindow","RainRenderingWindow","RainView","ShaderEditDialog"]
 uicfiles = Glob("*.ui")
 rccfiles = Glob("*.qrc")
 

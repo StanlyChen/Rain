@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QAction>
 #include <QFileDialog>
+#include "ShaderEditDialog.h"
 #include "ModelDisplayManager.h"
 
 
@@ -48,6 +49,14 @@ namespace Rain
         menuFile->addAction(actionClose);
         connect(actionClose, SIGNAL(triggered(bool)), this, SLOT(actionCloseTriggered(bool)));
 
+
+        QMenu* menuTool = new QMenu("Tool", ui.menuBar);
+        ui.menuBar->addAction(menuTool->menuAction());
+
+        QAction* actionEditShader = new QAction("Shader", this);
+        menuTool->addAction(actionEditShader);
+        connect(actionEditShader, SIGNAL(triggered(bool)), this, SLOT(actionEditShaderTriggered(bool)));
+
     }
 
     void MainWindow::actionOpenTriggered(bool checked/* = false*/)
@@ -62,6 +71,15 @@ namespace Rain
     void MainWindow::actionCloseTriggered(bool checked/* = false*/)
     {
         m_mdm->close(m_view);
+    }
+
+    void MainWindow::actionEditShaderTriggered(bool checked/*=false*/)
+    {
+
+        ShaderEditDialog* pDialog = new ShaderEditDialog;
+        pDialog->setModal(true);
+        pDialog->open();
+        return;
     }
 
 }

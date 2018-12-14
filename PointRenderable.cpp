@@ -81,19 +81,22 @@ namespace Rain
             uniform float pointSize;
             void main()
             {
-                vec4 centerPoint = gl_in[0].gl_Position/gl_in[0].gl_Position.w;
-                gl_Position = centerPoint;
-                gl_Position.xy +=  vec2(-reverse_resolution.x,reverse_resolution.y)*pointSize;
-                EmitVertex(); 
-                gl_Position = centerPoint;
-                gl_Position.xy += vec2(reverse_resolution.x,reverse_resolution.y)*pointSize;
-                EmitVertex(); 
-                gl_Position = centerPoint;
-                gl_Position.xy +=  vec2(-reverse_resolution.x,-reverse_resolution.y)*pointSize;
-                EmitVertex();
-                gl_Position = centerPoint;
-                gl_Position.xy += vec2(reverse_resolution.x,-reverse_resolution.y)*pointSize;
-                EmitVertex();
+                if( pointSize > 0 )
+                {
+                    vec4 centerPoint = gl_in[0].gl_Position/gl_in[0].gl_Position.w;
+                    gl_Position = centerPoint;
+                    gl_Position.xy +=  vec2(-reverse_resolution.x,reverse_resolution.y)*pointSize;
+                    EmitVertex(); 
+                    gl_Position = centerPoint;
+                    gl_Position.xy += vec2(reverse_resolution.x,reverse_resolution.y)*pointSize;
+                    EmitVertex(); 
+                    gl_Position = centerPoint;
+                    gl_Position.xy +=  vec2(-reverse_resolution.x,-reverse_resolution.y)*pointSize;
+                    EmitVertex();
+                    gl_Position = centerPoint;
+                    gl_Position.xy += vec2(reverse_resolution.x,-reverse_resolution.y)*pointSize;
+                    EmitVertex();
+                }
                 EndPrimitive();
             }
 

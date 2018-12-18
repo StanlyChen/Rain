@@ -2,15 +2,23 @@
 #include <QDialog>
 #include "ui_ShaderEditDialog.h"
 
-class ShaderEditDialog : public QDialog
+
+namespace Rain
 {
-    Q_OBJECT;
 
-public:
-    ShaderEditDialog();
-    ~ShaderEditDialog();
+	class ShaderEditDialog : public QDialog
+	{
+		Q_OBJECT;
 
-private:
-    Ui::Dialog m_ui;
-};
+	public:
+		ShaderEditDialog();
+		~ShaderEditDialog();
 
+	public slots:
+		void onItemSelect(const QString& name);
+
+	private:
+		Ui::Dialog m_ui;
+	};
+
+}

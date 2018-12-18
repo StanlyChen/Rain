@@ -1,6 +1,7 @@
 #include "PointRenderable.h"
 #include <iostream>
 #include "RainRenderingWindow.h"
+#include "ShaderManager.h"
 
 namespace Rain
 {
@@ -59,59 +60,9 @@ namespace Rain
 
     void PointRenderMethod::create(RainOpenGLFuncs* pContext)
     {
-        const char* vertexShaderStr = R"(
-			#version 450 core
-
-            uniform mat4x4 viewMatrix;
-            uniform mat4x4 projMatrix;
-
-			layout(location =0) in vec3 position;
-			void main()
-			{
-				gl_Position = projMatrix*viewMatrix*vec4(position, 1.0);
-			}
-		)";
-
-        const char* geomtryShaderStr = R"(
-            #version 450 core
-
-            layout(Points) in;
-            layout(triangle_strip, max_vertices = 4) out;
-            uniform vec2  reverse_resolution;
-            uniform float pointSize;
-            void main()
-            {
-                if( pointSize > 0 )
-                {
-                    vec4 centerPoint = gl_in[0].gl_Position/gl_in[0].gl_Position.w;
-                    gl_Position = centerPoint;
-                    gl_Position.xy +=  vec2(-reverse_resolution.x,reverse_resolution.y)*pointSize;
-                    EmitVertex(); 
-                    gl_Position = centerPoint;
-                    gl_Position.xy += vec2(reverse_resolution.x,reverse_resolution.y)*pointSize;
-                    EmitVertex(); 
-                    gl_Position = centerPoint;
-                    gl_Position.xy +=  vec2(-reverse_resolution.x,-reverse_resolution.y)*pointSize;
-                    EmitVertex();
-                    gl_Position = centerPoint;
-                    gl_Position.xy += vec2(reverse_resolution.x,-reverse_resolution.y)*pointSize;
-                    EmitVertex();
-                }
-                EndPrimitive();
-            }
-
-           )";
-
-        const char* fragShaderStr = R"(
-			#version 450 core
-			layout( location  = 0) out vec4 outColor;
-            uniform vec3 color;
-
-			void main()
-			{
-                outColor = vec4( color, 1 );
-			}
-		)";
+		const char* vertexShaderStr = ShaderManager::singleton().useShader("Point_VS", this).c_str();
+		const char* fragShaderStr = ShaderManager::singleton().useShader("Point_FS", this).c_str();
+		const char* geomtryShaderStr = ShaderManager::singleton().useShader("Point_GS", this).c_str();
 
         ShaderCompileResult ret = buildShaderProgram(pContext, vertexShaderStr, fragShaderStr, geomtryShaderStr);
         if (ret.bSuccess)

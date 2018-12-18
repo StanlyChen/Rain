@@ -22,6 +22,8 @@ namespace Rain
 
 
     public:
+		ShaderManager();
+
         std::set<std::string> listShaders() const;
         bool getShader(const std::string& name,  std::string& content) const;
         bool setShader( const std::string& name, std::string&& content, RainOpenGLFuncs* pContext);
@@ -29,9 +31,12 @@ namespace Rain
         const std::string&  useShader(const std::string& name, IRenderMethod* user);
         bool  addShader(const std::string& name, std::string&& content);
 
+		static ShaderManager& singleton();
+
     private:
         std::map<std::string, ShaderInfo> m_shaders;
     };
-
 }
+
+#define ADD_SHADER(x)  addShader( #x, x)
 

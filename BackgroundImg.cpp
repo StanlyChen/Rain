@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QImage>
 #include "RainRenderingWindow.h"
+#include "ShaderManager.h"
 
 namespace Rain
 {
@@ -94,31 +95,8 @@ namespace Rain
 
 	void BackgroundRenderMethod::create(RainOpenGLFuncs* pContext)
 	{
-		const char* vertexShaderStr = R"(
-			#version 450 core
-
-			layout(location =0) in vec3 position;
-            layout(location =0) out vec2 texcoord;
-			void main()
-			{
-				gl_Position = vec4(position, 1.0);
-                texcoord = (position.xy + vec2(1,1))/2;
-			}
-		)";
-
-		const char* fragShaderStr = R"(
-			#version 450 core
-
-            uniform sampler2D  bgImg;
-
-            layout( location = 0) in vec2 texcoord;
-			layout( location  = 0) out vec4 outColor;
-            
-			void main()
-			{
-                outColor = vec4( texture(bgImg, texcoord).xyz, 1 );
-			}
-		)";
+		const char* vertexShaderStr =  ShaderManager::singleton().useShader("bgImg_VS", this).c_str();
+		const char* fragShaderStr = ShaderManager::singleton().useShader("bgImg_FS", this).c_str();
 
 		ShaderCompileResult ret = buildShaderProgram(pContext, vertexShaderStr, fragShaderStr);
 		if (ret.bSuccess)

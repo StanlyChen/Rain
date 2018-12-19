@@ -39,6 +39,7 @@ namespace Rain
 	public slots:
 		void onAfterRenderingWindowInit(RainRenderingWindow*);
 		void onBeforeRenderingWindowUpdate(RainRenderingWindow*);
+        void refreshView();
 
 	private:
 		RainRenderingWindow* m_window = nullptr;

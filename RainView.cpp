@@ -94,5 +94,11 @@ namespace Rain{
 
         m_window->update();
     }
+
+    void RainView::refreshView()
+    {
+        if (m_window)
+            m_window->update();
+    }
 }
 

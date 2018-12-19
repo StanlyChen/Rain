@@ -32,6 +32,8 @@ namespace Rain
 		virtual ~IRenderMethod() {};
 		virtual void reload(RainOpenGLFuncs* pContext) {};
 		virtual void create(RainOpenGLFuncs* pContext) {};
+        virtual void destory(RainOpenGLFuncs* pContext) {};
+
         virtual void bind(RainOpenGLFuncs* pContext) {};
         virtual void unbind(RainOpenGLFuncs* pContext) {};
         virtual void updateParams(RainOpenGLFuncs* pContext, ShaderParams& params) {};

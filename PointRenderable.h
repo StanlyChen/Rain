@@ -34,6 +34,8 @@ namespace Rain
     {
     public:
         void create(RainOpenGLFuncs* pContext) override;
+        void destory(RainOpenGLFuncs* pContext) override;
+        void reload(RainOpenGLFuncs* pContext) override;
         void bind(RainOpenGLFuncs* pContext) override;
         void unbind(RainOpenGLFuncs* pContext) override;
         void updateParams(RainOpenGLFuncs* pContext, ShaderParams& params) override;
@@ -52,6 +54,8 @@ namespace Rain
         GLint m_pointSizeLoc = -1;
         GLint m_inverseResulotionLoc = -1;
         GLint m_colorLoc = -1;
+
+        bool m_bNeedReload = false;
     };
 
 }

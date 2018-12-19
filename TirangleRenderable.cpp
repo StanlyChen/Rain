@@ -80,9 +80,33 @@ namespace Rain
         }
     }
 
+    void TriangleRenderMethod::destory(RainOpenGLFuncs* pContext)
+    {
+        pContext->glUseProgram(0);
+        pContext->glDeleteProgram(m_shaderProgram);
+        m_shaderProgram = 0;
+        pContext->glDeleteShader(m_vertexShader);
+        m_vertexShader = 0;
+        pContext->glDeleteShader(m_fragShader);
+        m_fragShader = 0;
+        pContext->glDeleteShader(m_gsShader);
+        m_gsShader = 0;
+    }
+
+    void TriangleRenderMethod::reload(RainOpenGLFuncs* pContext)
+    {
+        m_bNeedReload = true;
+    }
 
     void TriangleRenderMethod::bind(RainOpenGLFuncs* pContext)
     {
+        if (m_bNeedReload)
+        {
+            destory(pContext);
+            create(pContext);
+            m_bNeedReload = false;
+        }
+
         pContext->glUseProgram(m_shaderProgram);
     }
 

@@ -77,8 +77,12 @@ namespace Rain
     {
 
         ShaderEditDialog* pDialog = new ShaderEditDialog;
+        connect(pDialog, SIGNAL(shaderChanged()), m_view, SLOT(refreshView()));
+
         pDialog->setModal(true);
         pDialog->open();
+
+
         return;
     }
 

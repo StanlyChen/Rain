@@ -25,11 +25,12 @@ namespace Rain
     const std::string BackgroundRMP_IMAGE_LOC = "RM::Background::ImageLoc";
 	class BackgroundRenderMethod : public IRenderMethod
 	{
-    public:
-       
+
 	public:
 		void create(RainOpenGLFuncs* pContext) override;
-		void bind(RainOpenGLFuncs* pContext) override;
+        void destory(RainOpenGLFuncs* pContext) override;
+        void reload(RainOpenGLFuncs* pContext) override;
+        void bind(RainOpenGLFuncs* pContext) override;
 		void unbind(RainOpenGLFuncs* pContext) override;
 
         void updateParams(RainOpenGLFuncs* pContext, ShaderParams& params);
@@ -40,5 +41,7 @@ namespace Rain
 		GLuint m_fragShader = 0;
 		GLuint m_shaderProgram = 0;
         GLint m_img_loc = -1;
+
+        bool m_bNeedReload = false;
 	};
 }

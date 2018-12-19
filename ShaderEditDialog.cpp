@@ -2,12 +2,12 @@
 #include "QLabel"
 #include "ShaderManager.h"
 #include <QComboBox>
-
+#include <QPushButton>
 namespace Rain
 {
 
 	ShaderEditDialog::ShaderEditDialog()
-		:QDialog()
+		:QDialog( )
 	{
 		setWindowTitle("Shader Edit");
 		m_ui.setupUi(this);
@@ -21,17 +21,39 @@ namespace Rain
 
 		connect(m_ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
 			[=](const QString &text) {
-			std::string shaderContent;
-			if (ShaderManager::singleton().getShader(text.toStdString(), shaderContent))
-				m_ui.textEdit->setText(QString::fromStdString(shaderContent));
-		}
+            onItemSelect(text);
+        }
 		);
+
+        connect(m_ui.apply_btn, SIGNAL(clicked()), this, SLOT(onApplyClicked()));
+        connect(m_ui.cancel_btn, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
+        onItemSelect(QString::fromStdString(*shadernames.begin()));
 	}
+
+    void ShaderEditDialog::onApplyClicked(bool bChecked /*= false*/)
+    {
+        std::string oldContent;
+        ShaderManager::singleton().getShader(m_curShaderName, oldContent);
+        std::string newContent = m_ui.textEdit->toPlainText().toStdString();
+        if (newContent != oldContent)
+        {
+            ShaderManager::singleton().setShader(m_curShaderName, std::move(newContent), nullptr);
+            emit shaderChanged( );
+        }
+    }
+
+    void ShaderEditDialog::onCancelClicked(bool bChecked/* = false*/)
+    {
+        std::string shaderContent;
+        if (ShaderManager::singleton().getShader(m_curShaderName, shaderContent))
+            m_ui.textEdit->setText(QString::fromStdString(shaderContent));
+    }
 
 	void ShaderEditDialog::onItemSelect(const QString& name)
 	{
+        m_curShaderName = name.toStdString();
 		std::string shaderContent;
-		if(ShaderManager::singleton().getShader(name.toStdString(), shaderContent))
+		if(ShaderManager::singleton().getShader(m_curShaderName, shaderContent))
 			m_ui.textEdit->setText(QString::fromStdString(shaderContent));
 	}
 

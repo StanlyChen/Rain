@@ -22,6 +22,12 @@
      <height>491</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -46,14 +52,14 @@
     <item>
      <widget class="QPushButton" name="apply_btn">
       <property name="text">
-       <string>PushButton</string>
+       <string>Apply</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="cancel_btn">
       <property name="text">
-       <string>PushButton</string>
+       <string>Cancel</string>
       </property>
      </widget>
     </item>

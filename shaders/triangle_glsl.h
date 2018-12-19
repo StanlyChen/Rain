@@ -45,18 +45,29 @@ void main()
 
 const char* Triangle_FS = R"(
 
+
 #version 450 core
 
 layout( location = 0 ) in vec3 normal;
 layout( location  = 0) out vec4 outColor;
             
+uniform vec3 lightColor =  vec3(1,1,1);
+uniform vec3 objectColor = vec3(0.7,0,0);
+uniform vec3 lightDirection = vec3(0,0,1);
+
 uniform vec3 ambient = vec3(0.3, 0.3, 0.3);
 uniform vec3 diffuse_l = vec3(0.7, 0, 0 );
 
 void main()
 {
-    float diffuse = abs( dot( vec3(0,0,1) , -normal) );
-    outColor = vec4( ambient + diffuse_l*diffuse, 1 );
+    float ambientStrength = 0.2f;
+    vec3 ambient = ambientStrength*lightColor;
+
+    vec3 norm = normalize(normal);
+    vec3 diffuse = max( dot( lightDirection, norm), 0)*lightColor;
+    
+    vec3 result = (ambient + diffuse)*objectColor;
+    outColor = vec4( result , 1 );
 }
 
 )";

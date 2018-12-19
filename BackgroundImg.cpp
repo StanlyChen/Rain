@@ -113,10 +113,34 @@ namespace Rain
 		}
 	}
 
-	void BackgroundRenderMethod::bind(RainOpenGLFuncs* pContext)
-	{
-		pContext->glUseProgram(m_shaderProgram);
-	}
+    void BackgroundRenderMethod::destory(RainOpenGLFuncs* pContext)
+    {
+        pContext->glUseProgram(0);
+        pContext->glDeleteProgram(m_shaderProgram);
+        m_shaderProgram = 0;
+        pContext->glDeleteShader(m_vertexShader);
+        m_vertexShader = 0;
+        pContext->glDeleteShader(m_fragShader);
+        m_fragShader = 0;
+    }
+
+    void BackgroundRenderMethod::reload(RainOpenGLFuncs* pContext)
+    {
+        m_bNeedReload = true;
+    }
+
+    void BackgroundRenderMethod::bind(RainOpenGLFuncs* pContext)
+    {
+        if (m_bNeedReload)
+        {
+            destory(pContext);
+            create(pContext);
+            m_bNeedReload = false;
+        }
+
+        pContext->glUseProgram(m_shaderProgram);
+    }
+
 
     void BackgroundRenderMethod::updateParams(RainOpenGLFuncs* pContext, ShaderParams& params)
     {

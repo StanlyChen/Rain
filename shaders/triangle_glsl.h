@@ -53,18 +53,21 @@ layout( location = 0 ) in vec3 normal;
 layout( location = 1 ) in vec4 fragPosition;
 layout( location  = 0) out vec4 outColor;
 
-
-
-layout(std140) uniform LightInfo
+struct LightInfo
 {
     vec4 lightColor;
     vec4 lightDirPos;
-} lightInfos[8];
+};
+
+layout(std140) uniform LightInfosBlock
+{
+    LightInfo lightsInfo[8];
+};
 
 uniform vec3 objectColor = vec3(0.7,0,0);
 uniform vec3 viewPosition = vec3(0,0,-1);
 
-vec3 directionLight( vec3 lightColor, vec3 lightDirection, vec3 objectColor, vec3 normal, vec3 viewPosition)
+vec3 directionLight( vec3 lightColor, vec3 lightDirection, vec3 objectColor, vec3 normal, vec3 viewPosition, vec3 fragPosition)
 {
     float ambientStrength = 0.2f;
     vec3 ambient = ambientStrength*lightColor;
@@ -82,19 +85,47 @@ vec3 directionLight( vec3 lightColor, vec3 lightDirection, vec3 objectColor, vec
     return result;
 }
 
+vec3 pointLight( vec3 lightColor, vec3 lightPosition, vec3 objectColor, vec3 normal, vec3 viewPosition, vec3 fragPosition)
+{
+    float ambientStrength = 0.2f;
+    vec3 ambient = ambientStrength*lightColor;
+
+	vec3 lightDirection = normalize(fragPosition - lightPosition );
+    vec3 norm = normalize(normal);
+    vec3 diffuse = max( dot( lightDirection, norm), 0)*lightColor;
+    
+    float specularStrength = 1;
+    vec3 viewDir = normalize(vec3(fragPosition) - viewPosition );
+    vec3 reflectDir = normalize(reflect(-lightDirection,norm));
+    float spec =pow( max(dot(viewDir, reflectDir),0),64);
+    vec3 specular = specularStrength* spec*lightColor;
+
+    vec3 result = (ambient + diffuse)*objectColor + specular;
+    return result;
+}
+
 void main()
 {
     outColor = vec4(0,0,0,1);
-    for( int i =0 ; i< 0; ++i)
+
+    for( int i =0 ; i< 8; ++i)
     {
-        if (lightInfos[i].lightDirPos.w == 0 )
+        if (lightsInfo[i].lightDirPos.w == 0 )
             continue;
-        if (lightInfos[i].lightDirPos.w == 1 ) //direction light
-            outColor.xyz += directionLight( lightInfos[i].lightDirPos.xyz, 
-                                            lightInfos[i].lightColor.xyz, 
+        else if (lightsInfo[i].lightDirPos.w == 1 ) //direction light
+            outColor.xyz += directionLight( lightsInfo[i].lightColor.xyz , 
+                                            lightsInfo[i].lightDirPos.xyz, 
                                             objectColor,
                                             normal,
-                                            viewPosition);
+                                            viewPosition,
+											fragPosition.xyz);
+        else if (lightsInfo[i].lightDirPos.w == 2 ) //point light
+            outColor.xyz += pointLight( lightsInfo[i].lightColor.xyz , 
+                                            lightsInfo[i].lightDirPos.xyz, 
+                                            objectColor,
+                                            normal,
+                                            viewPosition,
+											fragPosition.xyz);
     }
 }
 

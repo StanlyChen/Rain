@@ -74,7 +74,11 @@ namespace Rain
             m_gsShader = ret.geometryShader;
             m_viewMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "viewMatrix");
             m_projMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "projMatrix");
-            m_lightUBOLoc = pContext->glGetUniformBlockIndex(m_shaderProgram, "LightInfo");
+            m_lightUBOLoc = pContext->glGetUniformBlockIndex(m_shaderProgram, "LightInfosBlock");
+
+			GLint blockSize;
+			pContext->glGetActiveUniformBlockiv(m_shaderProgram, m_lightUBOLoc, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+			std::cout << blockSize << std::endl;
         }
         else
         {

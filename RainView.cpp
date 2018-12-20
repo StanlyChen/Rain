@@ -41,10 +41,10 @@ namespace Rain{
 		pLayerManger->insertFront(m_mainLayer);
 		pLayerManger->setLayerName(m_mainLayer, MAIN_LAYER_NAME);
         
-        auto pLight1 = std::make_shared<DirectionLight>(Point3D(1, 1, 1), Point3D(0, 0, 1));
-        m_mainLayer->addLight(pLight1);
+        //auto pLight1 = std::make_shared<DirectionLight>(Point3D(1, 1, 1), Point3D(0, 0, 1));
+        //m_mainLayer->addLight(pLight1);
 
-        auto pLight2 = std::make_shared<DirectionLight>(Point3D(1, 0, 0), Point3D(0, 1, 0));
+        auto pLight2 = std::make_shared<PointLight>(Point3D(1, 1, 1), Point3D(0, 0, -0.5f));
         m_mainLayer->addLight(pLight2);
 
 		m_overlapLayer = new Layer();

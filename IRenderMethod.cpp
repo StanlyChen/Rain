@@ -1,5 +1,7 @@
 #include "IRenderMethod.h"
 #include "RainRenderingWindow.h"
+#include "Layer.h"
+#include "const.h"
 
 namespace Rain
 {
@@ -105,15 +107,17 @@ namespace Rain
 	}
 
 
-    ShaderParams IRenderMethod::getAutoParams(RainRenderingWindow* pRenderWindow)
+    ShaderParams IRenderMethod::getAutoParams(RenderConext context)
     {
+        RainRenderingWindow* pRenderWindow = context.pContext;
+
         ShaderParams ret;
         ret[RMP_ProjMatrix] = pRenderWindow->getProjMatrix();
         ret[RMP_ViewMatrix] = pRenderWindow->getViewMatrix();
         QSize size = pRenderWindow->size();
         ret[RMP_InverseResolutionX] = 1.0f / size.width();
         ret[RMP_InverseResolutionY] = 1.0f / size.height();
-
+        ret[RMP_LightsInfo] = LIGHTS_UBO_SLOT;
         return ret;
     }
 }

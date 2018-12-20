@@ -2,9 +2,16 @@
 #include <IRenderable.h>
 #include "RainOpenGL.h"
 #include "RainRenderingWindow.h"
+#include "Light.h"
+#include "const.h"
 
 namespace Rain
 {
+    void Layer::addLight(const std::shared_ptr<Light>  light)
+    {
+        m_lights.push_back(light);
+        m_bLightsDirty = true;
+    }
 
 	void Layer::addRenderable(IRenderable* pRenderable)
 	{
@@ -16,11 +23,64 @@ namespace Rain
 		m_renderList.erase(pRenderable);
 	}
 
+    void Layer::_updateLights(RainRenderingWindow* pContext)
+    {
+        if (!m_bLightsDirty)
+            return;
+        m_bLightsDirty = false;
+        if (m_lightsUBOId)
+        {
+            pContext->glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_UBO_SLOT, 0);
+            pContext->glDeleteBuffers(1, &m_lightsUBOId);
+            m_lightsUBOId = 0;
+        }
+
+        if (m_lights.empty())
+            return;
+
+        GLint maxLightCount;
+        pContext->glGetIntegerv(GL_MAX_LIGHTS, &maxLightCount);
+        maxLightCount = std::min(maxLightCount, 8);
+
+        GLint currentLightCount = m_lights.size();
+        LightInfo lightsData[8]{};
+        for (int i = 0; i < std::min( maxLightCount, (int)m_lights.size()); ++i)
+        {
+            m_lights[i]->apply(i, lightsData);
+        }
+
+        pContext->glGenBuffers(1, &m_lightsUBOId);
+
+
+
+        if (m_lightsUBOId != 0)
+        {
+            pContext->glBindBuffer(GL_UNIFORM_BUFFER, m_lightsUBOId);
+            pContext->glBufferData(GL_UNIFORM_BUFFER, 8*sizeof(float)*8, nullptr, GL_STATIC_DRAW);
+            unsigned offset = 0;
+            for (int i = 0; i < 8; ++i)
+            {
+                pContext->glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float) * 4, lightsData[i].lightColor);
+                offset += sizeof(float) * 4;
+                pContext->glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float) * 4, lightsData[i].lightDirection);
+                offset += sizeof(float) * 4;
+            }
+            pContext->glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_UBO_SLOT, m_lightsUBOId);
+        }
+
+        pContext->glBindBuffer(GL_UNIFORM_BUFFER, 0 );
+    }
+
 	void Layer::render(RainRenderingWindow* pContext)
 	{
+        _updateLights(pContext);
+
+        RenderConext context;
+        context.pContext = pContext;
+        context.pLayer = this;
 		for (auto renderObj : m_renderList)
 		{
-			renderObj->render(pContext);
+			renderObj->render(context);
 		}
 	}
 

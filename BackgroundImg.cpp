@@ -70,8 +70,9 @@ namespace Rain
 
 	}
 
-	void BackgroundImage::render(RainRenderingWindow* pContext)
-	{
+    void BackgroundImage::render( RenderConext context)
+    {
+        auto pContext = context.pContext;
 		m_renderMothod->bind(pContext);
         pContext->glBindVertexArray(m_vao);
         pContext->glBindSampler(0, linearSampler);

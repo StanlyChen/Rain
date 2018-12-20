@@ -17,7 +17,7 @@ namespace Rain
 
         void create(RainOpenGLFuncs* pContext, Point3DList vertices, IndexList indices);
 
-        void render(RainRenderingWindow* pContext) override;
+        void render(RenderConext context) override;
 
         void destroy(RainOpenGLFuncs* pContext);
 
@@ -47,6 +47,7 @@ namespace Rain
 
         GLint m_projMatrixLoc = -1;
         GLint m_viewMatrixLoc = -1;
+        GLint m_lightUBOLoc = -1;
 
         bool m_bNeedReload = false;
     };

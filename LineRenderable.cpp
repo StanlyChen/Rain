@@ -36,14 +36,15 @@ namespace Rain
         m_lineRenderMethod->create(pContext);
     }
 
-    void LineRenderable::render(RainRenderingWindow* pContext)
+    void LineRenderable::render(RenderConext context)
     {
+        auto pContext = context.pContext;
         //pContext->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         //pContext->glEnable(GL_BLEND);
 
         pContext->glEnable(GL_DEPTH_TEST);
         m_lineRenderMethod->bind(pContext);
-        m_lineRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(pContext));
+        m_lineRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(context));
         pContext->glBindVertexArray(m_vao);
         
         pContext->glEnable(GL_LINE_SMOOTH);

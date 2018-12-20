@@ -4,6 +4,7 @@
 namespace Rain
 {
     class RainRenderingWindow;
+    class Layer;
 
 	enum RainPrimType
 	{
@@ -13,11 +14,16 @@ namespace Rain
 		Quad,
 	};
 
+    struct RenderConext
+    {
+        RainRenderingWindow* pContext;
+        Layer*               pLayer;
+    };
 
 	class IRenderable
 	{
 	public:
 		virtual ~IRenderable() {};
-		virtual void render(RainRenderingWindow* pContext) = 0 {};
+		virtual void render(RenderConext context) = 0 {};
 	};
 }

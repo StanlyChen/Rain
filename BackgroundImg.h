@@ -10,7 +10,7 @@ namespace Rain
 	class BackgroundImage : public IRenderable
 	{
 	public:
-		void render(RainRenderingWindow* pContext) override;
+		void render(RenderConext context) override;
 		void create(RainOpenGLFuncs* pContext)  ;
 		void destory(RainOpenGLFuncs* pContext) ;
 

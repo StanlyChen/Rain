@@ -36,11 +36,11 @@ namespace Rain
         m_pointRenderMethod->create(pContext);
     }
 
-    void PointRenderable::render(RainRenderingWindow* pContext)
+    void PointRenderable::render(RenderConext context)
     {
-
+        auto pContext = context.pContext;
         m_pointRenderMethod->bind(pContext);
-        m_pointRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(pContext));
+        m_pointRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(context));
         pContext->glBindVertexArray(m_vao);
 
         pContext->glEnable(GL_POLYGON_OFFSET_FILL);

@@ -4,15 +4,45 @@
 
 namespace Rain
 {
-    class Light()
+    struct LightInfo   //pass into the shader
     {
-        virtual void apply(unsigned index, RainOpenGLFuncs* pContext) {};
-    }
+        float lightColor[4];
+        union
+        {
+            float lightDirection[4];
+            float lightPosition[4];
+        };
+    };
 
-    class DirectionLights : public Light
+
+
+    class Light
     {
     public:
-        DirectionLights(Point3D direction, Point3D light);
-        void apply(unsigned index, RainOpenGLFuncs* pContext) override;
-    }
+        virtual void apply(unsigned index, LightInfo* lightsInfo) const {};
+    };
+
+    class DirectionLight : public Light
+    {
+    public:
+        DirectionLight(const Point3D& lightColor, const Point3D& direction );
+        void apply(unsigned index, LightInfo* lightsInfo) const override;
+
+    private:
+        Point3D m_direction;
+        Point3D m_lightColor;
+    };
+
+    class PointLight : public Light
+    {
+    public:
+        PointLight(const Point3D& lightColor , const Point3D& position );
+        void apply(unsigned index, LightInfo* lightsInfo) const override;
+
+    private:
+        Point3D m_position;
+        Point3D m_lightColor;
+    };
+
+
 }

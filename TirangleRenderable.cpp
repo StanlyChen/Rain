@@ -36,15 +36,16 @@ namespace Rain
         m_triangleRenderMethod->create(pContext);
     }
 
-    void TriangleRenderable::render(RainRenderingWindow* pContext)
+    void TriangleRenderable::render(RenderConext context)
     {
+        auto pContext = context.pContext;
         pContext->glEnable(GL_DEPTH_TEST);
         
         pContext->glEnable(GL_POLYGON_OFFSET_FILL);
         pContext->glPolygonOffset(TRIANGLE_DEPTH_BIAS, TRIANGLE_DEPTH_BIAS);
 
         m_triangleRenderMethod->bind(pContext);
-        m_triangleRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(pContext) );
+        m_triangleRenderMethod->updateParams(pContext, IRenderMethod::getAutoParams(context) );
         pContext->glBindVertexArray(m_vao);
         pContext->glDrawElements(GL_TRIANGLES, m_triangleCount * 3, GL_UNSIGNED_INT, 0);
         m_triangleRenderMethod->unbind(pContext);
@@ -73,6 +74,7 @@ namespace Rain
             m_gsShader = ret.geometryShader;
             m_viewMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "viewMatrix");
             m_projMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "projMatrix");
+            m_lightUBOLoc = pContext->glGetUniformBlockIndex(m_shaderProgram, "LightInfo");
         }
         else
         {
@@ -121,6 +123,9 @@ namespace Rain
 
         auto projMatrix =boost::get<glm::mat4x4>(params.at(RMP_ProjMatrix));
         pContext->glUniformMatrix4fv(m_projMatrixLoc, 1, false, reinterpret_cast<float*>(&projMatrix));
+        
+        int bindingPos = boost::get<int>(params.at(RMP_LightsInfo));
+        pContext->glUniformBlockBinding(m_shaderProgram, m_lightUBOLoc, bindingPos);
     }
 
     void TriangleRenderMethod::unbind(RainOpenGLFuncs* pContext)

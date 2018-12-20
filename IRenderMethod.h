@@ -2,6 +2,7 @@
 #include "RainOpenGL.h"
 #include <string>
 #include <RainTypes.h>
+#include "IRenderable.h"
 
 namespace Rain
 {
@@ -20,6 +21,7 @@ namespace Rain
     const std::string RMP_ProjMatrix = "RMP::ProjMatrix";
     const std::string RMP_InverseResolutionX = "RMP::InverseResolutionX";
     const std::string RMP_InverseResolutionY = "RMP::InverseResolutionY";
+    const std::string RMP_LightsInfo = "RMP::LightsInfo";
 
 
     const float POINT_DEPTH_BIAS = 0.0;
@@ -42,7 +44,7 @@ namespace Rain
 		static  ShaderCompileResult clearFailedBuild(RainOpenGLFuncs* pContext,  ShaderCompileResult& result);
 		static bool compileShader(RainOpenGLFuncs* pContext, GLuint shader, const char* source, std::string& errorMsg);
 
-        static ShaderParams getAutoParams(RainRenderingWindow* pRenderWindow);
+        static ShaderParams getAutoParams(RenderConext context);
 	};
 }
 

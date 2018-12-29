@@ -3,12 +3,12 @@ const char* Triangle_VS = R"(
 #version 450 core
 
 uniform mat4x4 viewMatrix;
-
+uniform mat4x4 projMatrix;
 
 layout(location =0) in vec3 position;
 void main()
 {
-	gl_Position = viewMatrix*vec4(position, 1.0);
+	gl_Position = projMatrix*viewMatrix*vec4(position, 1.0);
 }
 
 )";
@@ -107,7 +107,7 @@ vec3 pointLight( vec3 lightColor, vec3 lightPosition, vec3 objectColor, vec3 nor
 void main()
 {
     outColor = vec4(0,0,0,1);
-
+   
     for( int i =0 ; i< 8; ++i)
     {
         if (lightsInfo[i].lightDirPos.w == 0 )
@@ -127,6 +127,7 @@ void main()
                                             viewPosition,
 											fragPosition.xyz);
     }
+    
 }
 
 

@@ -78,7 +78,6 @@ namespace Rain
 
 			GLint blockSize;
 			pContext->glGetActiveUniformBlockiv(m_shaderProgram, m_lightUBOLoc, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-			std::cout << blockSize << std::endl;
         }
         else
         {

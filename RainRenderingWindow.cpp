@@ -95,7 +95,9 @@ namespace Rain
 
     glm::mat4x4 RainRenderingWindow::getProjMatrix()
     {
-        return glm::mat4();
+        auto matrix =  glm::perspectiveFov<float>(glm::radians(90.0f), size().width(), size().height(), 0.01f, 10000.f);
+        matrix = glm::mat4x4();
+        return matrix;
     }
 
     glm::mat4x4 RainRenderingWindow::getViewMatrix()

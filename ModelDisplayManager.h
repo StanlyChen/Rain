@@ -26,6 +26,8 @@ namespace Rain
         void close(RainView* pView);
 
     private:
+        void loadTestModel(RainView* pView);
+    private:
         const MainWindow* m_pMainWindow;
         std::list<MeshRecord> m_meshes;
 

@@ -15,7 +15,7 @@ void main()
 
 )";
 
-const char* Point_GS = R"(
+const char* Point_GS = "";/* R"(
 
 #version 450 core
 
@@ -44,13 +44,13 @@ void main()
     EndPrimitive();
 }
 
-)";
+)";*/
 
 const char* Point_FS = R"(
 
 #version 450 core
 layout( location  = 0) out vec4 outColor;
-uniform vec3 color;
+uniform vec3 color = vec3(1,1,0);
 
 void main()
 {

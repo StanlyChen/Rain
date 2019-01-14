@@ -69,7 +69,7 @@ namespace Rain
     {
 		const char* vertexShaderStr = ShaderManager::singleton().useShader("Line_VS", this).c_str();
 		const char* fragShaderStr = ShaderManager::singleton().useShader("Line_FS", this).c_str();
-		const char* geomtryShaderStr = ShaderManager::singleton().useShader("Line_GS", this).c_str();
+        const char* geomtryShaderStr = nullptr; // ShaderManager::singleton().useShader("Line_GS", this).c_str();
 
         ShaderCompileResult ret = buildShaderProgram(pContext, vertexShaderStr, fragShaderStr, geomtryShaderStr);
         if (ret.bSuccess)

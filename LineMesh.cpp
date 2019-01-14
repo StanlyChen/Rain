@@ -9,6 +9,7 @@ namespace Rain
     {
         m_indices.swap(indices);
         m_vertices.swap(vertices);
+        initBoundingBox(m_vertices, m_indices);
     }
 
 

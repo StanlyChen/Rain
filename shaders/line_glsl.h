@@ -13,7 +13,7 @@ void main()
 
 )";
 
-const char* Line_GS = R"(
+const char* Line_GS = "";/*R"(
 
 #version 450 core
 
@@ -47,7 +47,7 @@ void main()
     EndPrimitive();
 }
 
-)";
+)";*/
 
 const char* Line_FS = R"(
 

@@ -30,6 +30,7 @@ namespace Rain
 		centerWidet->setLayout(layout);
 
 		m_view = new RainView();
+        m_renderingWindow->setView(m_view); //bad code
         m_mdm = new ModelDisplayManager(this);
 
 		connect(m_renderingWindow, SIGNAL(afterRenderingWindowInit(RainRenderingWindow*)), m_view, SLOT(onAfterRenderingWindowInit(RainRenderingWindow*)));

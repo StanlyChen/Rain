@@ -13,121 +13,18 @@ void main()
 
 )";
 
-const char* Triangle_GS = R"(
-#version 450 core
-
-layout(triangles) in;
-layout(triangle_strip, max_vertices = 3) out;
-
-uniform mat4x4 projMatrix;
-layout( location = 0 ) out vec3 outNormal;
-layout( location = 1 ) out vec4 fragPosition;
-
-vec3 getNormal( vec3 v1, vec3 v2, vec3 v3)
-{
-    return normalize( cross( v3-v1, v2 - v1));
-}
-
-void main()
-{
-    outNormal = getNormal( vec3(gl_in[0].gl_Position) , vec3(gl_in[1].gl_Position), vec3(gl_in[2].gl_Position) );
-    gl_Position = projMatrix*gl_in[0].gl_Position;
-    fragPosition = gl_in[0].gl_Position;
-    EmitVertex(); 
-    gl_Position = projMatrix*gl_in[1].gl_Position;
-    fragPosition = gl_in[1].gl_Position;
-    EmitVertex(); 
-    gl_Position = projMatrix*gl_in[2].gl_Position;
-    fragPosition = gl_in[2].gl_Position;
-    EmitVertex();
-    EndPrimitive();
-}
-
-
-)";
+const char* Triangle_GS = "";
 
 const char* Triangle_FS = R"(
 #version 450 core
-
-layout( location = 0 ) in vec3 normal;
-layout( location = 1 ) in vec4 fragPosition;
 layout( location  = 0) out vec4 outColor;
 
-struct LightInfo
-{
-    vec4 lightColor;
-    vec4 lightDirPos;
-};
-
-layout(std140) uniform LightInfosBlock
-{
-    LightInfo lightsInfo[8];
-};
 
 uniform vec3 objectColor = vec3(0.7,0,0);
-uniform vec3 viewPosition = vec3(0,0,-1);
-
-vec3 directionLight( vec3 lightColor, vec3 lightDirection, vec3 objectColor, vec3 normal, vec3 viewPosition, vec3 fragPosition)
-{
-    float ambientStrength = 0.2f;
-    vec3 ambient = ambientStrength*lightColor;
-
-    vec3 norm = normalize(normal);
-    vec3 diffuse = max( dot( lightDirection, norm), 0)*lightColor;
-    
-    float specularStrength = 1;
-    vec3 viewDir = normalize(vec3(fragPosition) - viewPosition );
-    vec3 reflectDir = normalize(reflect(-lightDirection,norm));
-    float spec =pow( max(dot(viewDir, reflectDir),0),64);
-    vec3 specular = specularStrength* spec*lightColor;
-
-    vec3 result = (ambient + diffuse)*objectColor + specular;
-    return result;
-}
-
-vec3 pointLight( vec3 lightColor, vec3 lightPosition, vec3 objectColor, vec3 normal, vec3 viewPosition, vec3 fragPosition)
-{
-    float ambientStrength = 0.2f;
-    vec3 ambient = ambientStrength*lightColor;
-
-	vec3 lightDirection = normalize(fragPosition - lightPosition );
-    vec3 norm = normalize(normal);
-    vec3 diffuse = max( dot( lightDirection, norm), 0)*lightColor;
-    
-    float specularStrength = 1;
-    vec3 viewDir = normalize(vec3(fragPosition) - viewPosition );
-    vec3 reflectDir = normalize(reflect(-lightDirection,norm));
-    float spec =pow( max(dot(viewDir, reflectDir),0),64);
-    vec3 specular = specularStrength* spec*lightColor;
-
-    vec3 result = (ambient + diffuse)*objectColor + specular;
-    return result;
-}
 
 void main()
 {
-    outColor = vec4(0,0,0,1);
-   
-    for( int i =0 ; i< 8; ++i)
-    {
-        if (lightsInfo[i].lightDirPos.w == 0 )
-            continue;
-        else if (lightsInfo[i].lightDirPos.w == 1 ) //direction light
-            outColor.xyz += directionLight( lightsInfo[i].lightColor.xyz , 
-                                            lightsInfo[i].lightDirPos.xyz, 
-                                            objectColor,
-                                            normal,
-                                            viewPosition,
-											fragPosition.xyz);
-        else if (lightsInfo[i].lightDirPos.w == 2 ) //point light
-            outColor.xyz += pointLight( lightsInfo[i].lightColor.xyz , 
-                                            lightsInfo[i].lightDirPos.xyz, 
-                                            objectColor,
-                                            normal,
-                                            viewPosition,
-											fragPosition.xyz);
-    }
-    
+    outColor = vec4( objectColor,1);
 }
 
 

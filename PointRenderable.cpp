@@ -62,7 +62,7 @@ namespace Rain
     {
 		const char* vertexShaderStr = ShaderManager::singleton().useShader("Point_VS", this).c_str();
 		const char* fragShaderStr = ShaderManager::singleton().useShader("Point_FS", this).c_str();
-		const char* geomtryShaderStr = ShaderManager::singleton().useShader("Point_GS", this).c_str();
+        const char* geomtryShaderStr = nullptr;// ShaderManager::singleton().useShader("Point_GS", this).c_str();
 
         ShaderCompileResult ret = buildShaderProgram(pContext, vertexShaderStr, fragShaderStr, geomtryShaderStr);
         if (ret.bSuccess)
@@ -124,7 +124,6 @@ namespace Rain
 
         auto projMatrix = boost::get<glm::mat4x4>(params.at(RMP_ProjMatrix));
         pContext->glUniformMatrix4fv(m_projMatrixLoc, 1, false, reinterpret_cast<float*>(&projMatrix));
-
         pContext->glUniform1f(m_pointSizeLoc, m_pointSize);
         pContext->glUniform2f(m_inverseResulotionLoc,
             boost::get<float>(params.at(RMP_InverseResolutionX)),

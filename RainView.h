@@ -2,6 +2,7 @@
 #include <QObject>
 #include "OrderList.h"
 #include "RainOpenGL.h"
+#include "AABB.h"
 
 namespace Rain
 {
@@ -41,12 +42,17 @@ namespace Rain
 		void onBeforeRenderingWindowUpdate(RainRenderingWindow*);
         void refreshView();
 
+    public:
+        const AABB& getBoundingBox();
 	private:
 		RainRenderingWindow* m_window = nullptr;
 		Layer*               m_backgroundLayer = nullptr;
 		Layer*               m_mainLayer = nullptr;
 		Layer*               m_overlapLayer = nullptr;
 		BackgroundImage*     m_background = nullptr;
+        
+        AABB                 m_bbox;
+        bool                 m_bBBoxDirty = false;
 
         util::OrderList<IMesh*>  m_meshes;
         util::OrderList<IMesh*>  m_newMeshes;

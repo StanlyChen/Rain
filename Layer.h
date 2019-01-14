@@ -6,6 +6,7 @@
 #include <vector>
 #include "Light.h"
 #include <memory>
+#include "AABB.h"
 
 namespace Rain
 {
@@ -27,18 +28,19 @@ namespace Rain
 		void render(RainRenderingWindow* pContext);
 		std::string getName() const;
         void addLight(const std::shared_ptr<Light> light);
-        
+
+
     private:
         void _updateLights(RainRenderingWindow* pContext);
 
 	private:
 		util::OrderList<IRenderable*> m_renderList;
         std::vector< std::shared_ptr<Light> >   m_lights;
+        AABB m_bbox;
 
 		std::string m_name = DefaultLayerName;
         GLuint m_lightsUBOId = 0;
         bool m_bLightsDirty = false;
-
 		void setLayerName(const std::string name);
 		friend class LayerManager;	
 		

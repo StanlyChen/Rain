@@ -63,9 +63,8 @@ namespace Rain
     {
 		const char* vertexShaderStr = ShaderManager::singleton().useShader("Triangle_VS", this).c_str();
 		const char* fragShaderStr = ShaderManager::singleton().useShader("Triangle_FS", this).c_str();
-		const char* geomtryShaderStr = ShaderManager::singleton().useShader("Triangle_GS", this).c_str();
 
-        ShaderCompileResult ret = buildShaderProgram(pContext, vertexShaderStr, fragShaderStr, geomtryShaderStr);
+        ShaderCompileResult ret = buildShaderProgram(pContext, vertexShaderStr, fragShaderStr, nullptr);
         if (ret.bSuccess)
         {
             m_vertexShader = ret.vertexShader;
@@ -75,9 +74,6 @@ namespace Rain
             m_viewMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "viewMatrix");
             m_projMatrixLoc = pContext->glGetUniformLocation(m_shaderProgram, "projMatrix");
             m_lightUBOLoc = pContext->glGetUniformBlockIndex(m_shaderProgram, "LightInfosBlock");
-
-			GLint blockSize;
-			pContext->glGetActiveUniformBlockiv(m_shaderProgram, m_lightUBOLoc, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
         }
         else
         {

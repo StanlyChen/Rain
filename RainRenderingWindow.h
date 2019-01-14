@@ -31,12 +31,15 @@ namespace Rain
 
         glm::mat4x4 getProjMatrix();
         glm::mat4x4 getViewMatrix();
+        glm::mat4x4 getProjViewMatrix();
 
         void zoomin(float delta = 0.05f);
         void zoomout(float delta = 0.05f);
         void rotate(float pitch, float yaw);
         void pan(float right_offset, float up_offset);
         void fitview();
+
+        void setView(RainView* pView) { m_view = pView; }
 
 	signals:
 		void afterRenderingWindowInit(RainRenderingWindow*);
@@ -54,6 +57,7 @@ namespace Rain
         void mouseMoveEvent(QMouseEvent* ev) override;
         void wheelEvent(QWheelEvent *ev) override;
 
+
 	protected:
 		QOpenGLPaintDevice* m_paintDevice;
 		QTime               m_fpsTimer;
@@ -64,6 +68,7 @@ namespace Rain
         MouseStatus         m_mouseStatus;
         glm::mat4x4         m_rotatationMatrix;
         glm::vec2           m_translate;
+        float               m_cameraPos = -20;
 	};
 }
 

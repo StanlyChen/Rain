@@ -10,6 +10,8 @@ namespace Rain
         m_quadIndices.swap(indices);
         m_vertices.swap(vertices);
 
+        initBoundingBox(m_vertices, m_quadIndices);
+
         size_t quadCout = indices.size()/4;
         m_triangleIndices.reserve( quadCout * 6 );
         for (int i = 0; i < quadCout; ++i)

@@ -27,21 +27,22 @@ namespace Rain
     {
         Point3DList vertices;
         Point3D vertex;
+        float z_base = 5;
         vertex.x = 0;
         vertex.y = 0.5f;
-        vertex.z = 0.f;
+        vertex.z = z_base + 0.f;
         vertices.push_back(vertex);
         vertex.x = 0.5;
         vertex.y = -0.5f;
-        vertex.z = 0.f;
+        vertex.z = z_base + 0.f;
         vertices.push_back(vertex);
         vertex.x = -0.5;
         vertex.y = -0.5f;
-        vertex.z = 0.f;
+        vertex.z = z_base + 0.f;
         vertices.push_back(vertex);
         vertex.x = 0;
         vertex.y = 0;
-        vertex.z = 0.5f;
+        vertex.z = z_base + 0.5f;
         vertices.push_back(vertex);
 
         IndexList indices;

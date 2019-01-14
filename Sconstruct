@@ -103,7 +103,7 @@ for rcc_file in rccfiles:
 VariantDir("build",".", duplicate =0)
 files = Glob("build/*.cpp") + generateNode
 
-localIncs = ["${QTGEN}", "."]
+localIncs = ["${QTGEN}", ".","shaders"]
 qtIncs = [
 "${QT_DIR}/include",
 "${QT_DIR}/include/QtWidgets",

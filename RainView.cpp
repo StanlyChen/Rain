@@ -88,7 +88,9 @@ namespace Rain{
         if (m_meshes.find(pMesh) != m_meshes.end())
             return;
 
+
         m_newMeshes.push_back(pMesh);
+        m_bBBoxDirty = true;
         m_window->update();
     }
 
@@ -97,7 +99,7 @@ namespace Rain{
         m_newMeshes.erase(pMesh);
         m_meshes.erase(pMesh);
         m_deleteMeshes.push_back(pMesh);
-
+        m_bBBoxDirty = true;
         m_window->update();
     }
 
@@ -105,6 +107,26 @@ namespace Rain{
     {
         if (m_window)
             m_window->update();
+    }
+
+    const AABB&  RainView::getBoundingBox()
+    {
+        if (m_bBBoxDirty)
+        {
+            AABB box;
+            for (auto pMesh : m_newMeshes)
+            {
+                box.merge(pMesh->getBoundingBox());
+            }
+
+            for (auto pMesh : m_meshes)
+            {
+                box.merge(pMesh->getBoundingBox());
+            }
+
+            m_bBBoxDirty = false;
+        }
+        return m_bbox;
     }
 }
 

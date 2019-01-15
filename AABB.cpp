@@ -32,7 +32,15 @@ namespace Rain {
     {
         return (m_minPoint + m_maxPoint) / 2.0f;
     }
+    Point3D AABB::min() const
+    {
+        return m_minPoint;
+    }
 
+    Point3D AABB::max() const
+    {
+        return m_maxPoint;
+    }
 }
 
 

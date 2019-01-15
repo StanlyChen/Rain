@@ -30,11 +30,17 @@ namespace Rain
 		centerWidet->setLayout(layout);
 
 		m_view = new RainView();
-        m_renderingWindow->setView(m_view); //bad code
         m_mdm = new ModelDisplayManager(this);
 
 		connect(m_renderingWindow, SIGNAL(afterRenderingWindowInit(RainRenderingWindow*)), m_view, SLOT(onAfterRenderingWindowInit(RainRenderingWindow*)));
 		connect(m_renderingWindow, SIGNAL(beforeRenderingWindowUpdate(RainRenderingWindow*)), m_view, SLOT(onBeforeRenderingWindowUpdate(RainRenderingWindow*)));
+        
+        connect(m_renderingWindow, SIGNAL(onKeyPressEvent(QKeyEvent*)), m_view, SLOT(onKeyPress(QKeyEvent*)));
+        connect(m_renderingWindow, SIGNAL(onKeyReleaseEvent(QKeyEvent*)), m_view, SLOT(onKeyRelease(QKeyEvent*)));
+        connect(m_renderingWindow, SIGNAL(onMousePressEvent(QMouseEvent*)), m_view, SLOT(onMousePress(QMouseEvent*)));
+        connect(m_renderingWindow, SIGNAL(onMouseReleaseEvent(QMouseEvent*)), m_view, SLOT(onMouseRelease(QMouseEvent*)));
+        connect(m_renderingWindow, SIGNAL(onMouseMoveEvent(QMouseEvent*)), m_view, SLOT(onMouseMove(QMouseEvent*)));
+        connect(m_renderingWindow, SIGNAL(onWheelEvent(QWheelEvent*)), m_view, SLOT(onWheel(QWheelEvent*)));
 	}
 
     void MainWindow::initMenu()

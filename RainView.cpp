@@ -26,6 +26,7 @@ namespace Rain{
 			throw std::exception("Program Error");
 
 		m_window = pRenderingWindow;
+        m_viewManipulator = new ViewManipulator(pRenderingWindow);
 
 		m_backgroundLayer = new Layer();
 		LayerManager* pLayerManger = pRenderingWindow->getLayerManager();
@@ -124,9 +125,69 @@ namespace Rain{
                 box.merge(pMesh->getBoundingBox());
             }
 
+            m_bbox = box;
+
             m_bBBoxDirty = false;
         }
         return m_bbox;
     }
+
+    void RainView::onKeyPress(QKeyEvent* ev)
+    {
+
+    }
+    
+    void RainView::onKeyRelease(QKeyEvent* ev) 
+    {
+
+    }
+    void RainView::onMousePress(QMouseEvent* ev)
+    {
+        m_mouseStatus.setPosition(ev->localPos());
+        m_mouseStatus.onMouseButtonPress(ev->button());
+        if (m_mouseStatus.isLeftRightDown())
+            m_viewManipulator->fitview(this);
+    }
+
+    void RainView::onMouseRelease(QMouseEvent* ev)
+    {
+        m_mouseStatus.setPosition(ev->localPos());
+        m_mouseStatus.onMouseButtonRelease(ev->button());
+    }
+
+    void RainView::onMouseMove(QMouseEvent* ev)
+    {
+        m_mouseStatus.setPosition(ev->localPos());
+        if (m_mouseStatus.isMiddleDown())
+        {
+            QVector2D delta = m_mouseStatus.getLastDeltaPosition();
+            //
+            float pitchDegree = 720.0f / m_window->size().height() * delta.y();
+            float yawDegree = 720.0f  / m_window->size().width() * delta.x();
+            m_viewManipulator->rotate(pitchDegree, yawDegree);
+        }
+        else if (m_mouseStatus.isRightDown())
+        {
+            QVector2D delta = m_mouseStatus.getLastDeltaPosition();
+            m_viewManipulator->pan(delta.x(), -delta.y());
+        }
+    }
+
+    void RainView::onWheel(QWheelEvent *ev)
+    {
+        // x() is always 0
+        float angle = ev->angleDelta().y();
+        if (angle == 120) // roll up, zoom in
+        {
+            m_viewManipulator->zoomin();
+        }
+        else if ( angle == -120 ) // roll down, zoom out
+        {
+            m_viewManipulator->zoomout();
+        }
+        ev->accept();
+    }
+
+
 }
 

@@ -3,6 +3,9 @@
 #include "OrderList.h"
 #include "RainOpenGL.h"
 #include "AABB.h"
+#include "MouseStatus.h"
+#include "ViewManipulator.h"
+
 
 namespace Rain
 {
@@ -42,6 +45,15 @@ namespace Rain
 		void onBeforeRenderingWindowUpdate(RainRenderingWindow*);
         void refreshView();
 
+
+        void onKeyPress(QKeyEvent* ev);
+        void onKeyRelease(QKeyEvent* ev);
+        void onMousePress(QMouseEvent* ev);
+        void onMouseRelease(QMouseEvent* ev);
+        void onMouseMove(QMouseEvent* ev);
+        void onWheel(QWheelEvent *ev);
+
+
     public:
         const AABB& getBoundingBox();
 	private:
@@ -53,6 +65,9 @@ namespace Rain
         
         AABB                 m_bbox;
         bool                 m_bBBoxDirty = false;
+
+        MouseStatus         m_mouseStatus;
+        ViewManipulator*    m_viewManipulator;
 
         util::OrderList<IMesh*>  m_meshes;
         util::OrderList<IMesh*>  m_newMeshes;

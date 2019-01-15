@@ -27,7 +27,7 @@ namespace Rain
     {
         Point3DList vertices;
         Point3D vertex;
-        float z_base = 5;
+        float z_base = 0;
         vertex.x = 0;
         vertex.y = 0.5f;
         vertex.z = z_base + 0.f;

@@ -15,8 +15,6 @@ namespace Rain
 		:  QOpenGLWindow()
 	{
 		m_layerManager = new LayerManager();
-		m_view = nullptr;
-
         connect(this, SIGNAL(frameSwapped()), this, SLOT(onFrameSwapped()) );
 	}
 
@@ -96,29 +94,13 @@ namespace Rain
 
     glm::mat4x4 RainRenderingWindow::getProjMatrix()
     {
-        //glm::mat4x4 matrix =  glm::perspective<float>(glm::radians(90.0f),1.0f*size().width()/size().height(), 0.01f, 10000.f);
 
-        float fov = glm::radians(90.0f);
-        float tanfov = glm::tan(fov / 2);
-        float aspect_ratio = 1.0f*size().width() / size().height();
-        float z_near = 0.01f;
-        float z_far = 1000.0f;
-
-        glm::mat4x4 projMatrix = glm::mat4x4();
-        projMatrix[0] = glm::vec4(1 / tanfov / aspect_ratio, 0, 0, 0);
-        projMatrix[1] = glm::vec4(0, 1 / tanfov, 0, 0);
-        projMatrix[2] = glm::vec4(0, 0, 1 / (z_far - z_near), z_near/(z_near-z_far));
-        projMatrix[3] = glm::vec4(0, 0, 1, 0);
-        projMatrix = glm::transpose(projMatrix);
-        
-        return projMatrix;
+        return glm::mat4()/*m_projMatrix*/;
     }
 
     glm::mat4x4 RainRenderingWindow::getViewMatrix()
     {
-        return glm::translate(glm::mat4(), glm::vec3(m_translate, -m_cameraPos)) 
-            * glm::scale(glm::mat4(), glm::vec3(1.f, 1.f, 1.f)*m_scale)
-            * m_rotatationMatrix;
+        return glm::mat4()/*m_viewMatrix*/;
     }
 
     glm::mat4x4 RainRenderingWindow::getProjViewMatrix()
@@ -128,114 +110,43 @@ namespace Rain
 
     void RainRenderingWindow::keyPressEvent(QKeyEvent* ev)
     {
-
+        emit onKeyPressEvent(ev);
     }
 
     void RainRenderingWindow::keyReleaseEvent(QKeyEvent* ev)
     {
-
+        emit onKeyReleaseEvent(ev);
     }
 
     void RainRenderingWindow::mousePressEvent(QMouseEvent* ev)
     {
-        m_mouseStatus.setPosition(ev->localPos());
-        m_mouseStatus.onMouseButtonPress(ev->button());
-        if (m_mouseStatus.isLeftRightDown())
-            fitview();
+        emit onMousePressEvent(ev);
     }
 
     void RainRenderingWindow::mouseReleaseEvent(QMouseEvent* ev)
     {
-        m_mouseStatus.setPosition(ev->localPos());
-        m_mouseStatus.onMouseButtonRelease(ev->button());
+        emit onMouseReleaseEvent(ev);
     }
 
     void RainRenderingWindow::mouseMoveEvent(QMouseEvent* ev) 
     {
-        m_mouseStatus.setPosition(ev->localPos());
-        if (m_mouseStatus.isMiddleDown())
-        {
-            QVector2D delta = m_mouseStatus.getLastDeltaPosition();
-            //
-            float pitchDegree = 720.0f * delta.y() / size().height();
-            float yawDegree = 720.0f * delta.x() / size().width();
-            rotate(pitchDegree, yawDegree);
-        }
-        else if (m_mouseStatus.isRightDown())
-        {
-            QVector2D delta = m_mouseStatus.getLastDeltaPosition();
-
-            auto p1 = getProjViewMatrix()*glm::vec4(0, 0, 0, 1);
-            auto p2 = getProjViewMatrix()*glm::vec4(1, 1, 0, 1);
-            p1 /= p1.w;
-            p2 /= p2.w;
-            //screen's original is at the left-top
-            pan(delta.x()*2/size().width()/(p2.x-p1.x)*m_scale, -delta.y() * 2 / size().height()/(p2.y-p1.y)*m_scale);
-        }
+        emit onMouseMoveEvent(ev);
     }
 
     void RainRenderingWindow::wheelEvent(QWheelEvent *ev)
     {
-        // x() is always 0
-        float angle = ev->angleDelta().y();
-        if (angle == 120) // roll up, zoom in
-        {
-            zoomin();
-        }
-        else if ( angle == -120 ) // roll down, zoom out
-        {
-            zoomout();
-        }
-        ev->accept();
+        emit onWheelEvent(ev);
     }
 
-    void RainRenderingWindow::zoomin( float delta )
+    void RainRenderingWindow::setViewMatrix(const glm::mat4x4 matrix)
     {
-        m_scale *= (1+delta);
-        update();
+        m_viewMatrix = matrix;
     }
 
-    void RainRenderingWindow::zoomout(float delta)
+    void RainRenderingWindow::setProjMatrix(const glm::mat4x4 matrix)
     {
-        m_scale *= (1-delta);
-        update();
+        m_projMatrix = matrix;
     }
 
-    void RainRenderingWindow::rotate(float pitch, float yaw)
-    {
-        const AABB& viewBBox = m_view->getBoundingBox();
-        auto center = viewBBox.center();
-        
-        m_rotatationMatrix = glm::translate(m_rotatationMatrix, -center);
 
-        auto inverseMatrix = glm::inverse(m_rotatationMatrix);
-        if (pitch)
-        {
-            glm::vec4 rotationAxis = inverseMatrix *glm::vec4(1, 0, 0, 0);
-            m_rotatationMatrix = glm::rotate(m_rotatationMatrix, glm::radians(pitch), glm::vec3(rotationAxis.x, rotationAxis.y, rotationAxis.z ));
-        }
-            
-        if (yaw)
-        {
-            glm::vec4 rotationAxis = inverseMatrix * glm::vec4(0, 1, 0, 0);
-            m_rotatationMatrix = glm::rotate(m_rotatationMatrix, glm::radians(yaw), glm::vec3(rotationAxis.x, rotationAxis.y, rotationAxis.z) );
-        }
-
-        m_rotatationMatrix = glm::translate(m_rotatationMatrix, center);
-        update();
-    }
-
-    void RainRenderingWindow::fitview()
-    {
-        m_scale = 1.f;
-        m_rotatationMatrix = glm::mat4x4();
-        m_translate = glm::vec2();
-        update();
-    }
-
-    void  RainRenderingWindow::pan(float right_offset, float up_offset)
-    {
-        m_translate += glm::vec2(right_offset, up_offset);
-        update();
-    }
 }

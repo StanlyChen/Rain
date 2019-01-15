@@ -3,7 +3,6 @@
 #include <QTime>
 #include "RainOpenGL.h"
 #include "RainTypes.h"
-#include "MouseStatus.h"
 
 namespace Rain
 {
@@ -33,17 +32,19 @@ namespace Rain
         glm::mat4x4 getViewMatrix();
         glm::mat4x4 getProjViewMatrix();
 
-        void zoomin(float delta = 0.05f);
-        void zoomout(float delta = 0.05f);
-        void rotate(float pitch, float yaw);
-        void pan(float right_offset, float up_offset);
-        void fitview();
+        void setViewMatrix(const glm::mat4x4 matrix);
+        void setProjMatrix(const glm::mat4x4 matrix);
 
-        void setView(RainView* pView) { m_view = pView; }
 
 	signals:
 		void afterRenderingWindowInit(RainRenderingWindow*);
 		void beforeRenderingWindowUpdate(RainRenderingWindow*);
+        void onKeyPressEvent(QKeyEvent* ev);
+        void onKeyReleaseEvent(QKeyEvent* ev);
+        void onMousePressEvent(QMouseEvent* ev);
+        void onMouseReleaseEvent(QMouseEvent* ev);
+        void onMouseMoveEvent(QMouseEvent* ev);
+        void onWheelEvent(QWheelEvent *ev);
 
     protected slots:
         void onFrameSwapped();
@@ -59,16 +60,14 @@ namespace Rain
 
 
 	protected:
+        glm::mat4           m_projMatrix;
+        glm::mat4           m_viewMatrix;
+
 		QOpenGLPaintDevice* m_paintDevice;
 		QTime               m_fpsTimer;
 		LayerManager*       m_layerManager;
-		RainView*           m_view;
+
         int                 m_lastFrameTime = 0;
-        float               m_scale = 1.f;
-        MouseStatus         m_mouseStatus;
-        glm::mat4x4         m_rotatationMatrix;
-        glm::vec2           m_translate;
-        float               m_cameraPos = -20;
 	};
 }
 
